@@ -463,6 +463,20 @@
       gap: 0.6rem;
       color: #8a6b3e;
     }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #e0a878;
+      cursor: pointer;
+      font-size: 0.7rem;
+      margin-left: 0.5rem;
+    }
+
+    .remove-btn:hover {
+      color: #f7b05e;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -651,15 +665,13 @@
   function addFreeBookmark() {
     if (freeBookmarkUsed) return;
     
-    // Remove any existing bookmarks (paid ones)
+    // Remove any existing bookmarks (paid ones or any)
     if (cart[BOOKMARK_ID]) {
       delete cart[BOOKMARK_ID];
       delete itemNotes[BOOKMARK_ID];
     }
     
-    // Add exactly 1 free bookmark
-    cart[BOOKMARK_ID] = 1;
-    itemNotes[BOOKMARK_ID] = "🎁 FREE with $10+ purchase";
+    // Set a special flag to indicate free bookmark (not stored as quantity)
     freeBookmarkUsed = true;
     
     updateCartSummary();
@@ -667,7 +679,15 @@
     
     const toast = document.getElementById('freebieToast');
     toast.classList.remove('show');
-    showMessage("🎉 Free bookmark added to your cart! You can still buy more bookmarks separately.", false);
+    showMessage("🎉 FREE Bookmark added to your cart! You can still buy additional bookmarks separately.", false);
+  }
+
+  function removeFreeBookmark() {
+    freeBookmarkUsed = false;
+    freeBookmarkOfferShown = false;
+    updateCartSummary();
+    renderItems();
+    showMessage("Free bookmark removed from cart.", false);
   }
 
   function dismissFreeBookmarkOffer() {
@@ -748,10 +768,6 @@
     if (newQty <= 0) {
       delete cart[id];
       delete itemNotes[id];
-      if (id === BOOKMARK_ID) {
-        freeBookmarkUsed = false;
-        freeBookmarkOfferShown = false;
-      }
     } else {
       cart[id] = newQty;
     }
@@ -761,9 +777,7 @@
     
     const subtotal = getSubtotalExcludingBookmarks();
     if (subtotal < 10) {
-      if (id !== BOOKMARK_ID) {
-        freeBookmarkOfferShown = false;
-      }
+      freeBookmarkOfferShown = false;
     }
     
     checkAndShowFreeBookmarkOffer();
@@ -771,9 +785,6 @@
 
   function getItemCost(product, qty) {
     if (product.id === 2) return getMushroomPrice(qty);
-    if (product.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE")) {
-      return 0;
-    }
     if (typeof product.price === 'number') return product.price * qty;
     return 0;
   }
@@ -786,12 +797,11 @@
     let totalCost = 0;
     let html = '';
     
+    // First, add all regular items
     for (let [idStr, qty] of Object.entries(cart)) {
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       totalItems += qty;
-      
-      let isFree = (prod.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE"));
       let itemCost = getItemCost(prod, qty);
       totalCost += itemCost;
       
@@ -803,8 +813,6 @@
         if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
         if (singles > 0) breakdown.push(`${singles} single @ $3`);
         priceText = `$${itemCost} (${breakdown.join(' + ')})`;
-      } else if (isFree) {
-        priceText = "🎁 FREE!";
       } else if (typeof prod.price === 'number') {
         priceText = `$${itemCost}`;
       } else {
@@ -812,8 +820,13 @@
       }
       
       const noteLine = itemNotes[prod.id] ? ` 📝 ${itemNotes[prod.id]}` : '';
-      const freeTag = isFree ? ' 🎁' : '';
-      html += `<div class="cart-item"><span><strong>${prod.name}${freeTag}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
+      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
+    }
+    
+    // Add the free bookmark as a separate row (not as a quantity)
+    if (freeBookmarkUsed) {
+      html += `<div class="cart-item"><span><strong>🎁 FREE Bookmark</strong> <button class="remove-btn" id="removeFreeBookmarkBtn" style="background:none; border:none; color:#e0a878; cursor:pointer;">[remove]</button></span><span>🎁 FREE!</span></div>`;
+      totalItems += 1;
     }
     
     if (totalItems === 0) {
@@ -826,6 +839,12 @@
       cartListDiv.innerHTML = html;
       totalSpan.innerText = `Total: $${totalCost.toFixed(2)}`;
       countSpan.innerText = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+      
+      // Attach remove free bookmark handler if it exists
+      const removeBtn = document.getElementById('removeFreeBookmarkBtn');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', removeFreeBookmark);
+      }
     }
   }
 
@@ -847,14 +866,15 @@
   function buildShopOrderMessage(name, email, pickupDate, notes) {
     let itemsList = "";
     let total = 0;
+    
+    // Regular items
     for (let [idStr, qty] of Object.entries(cart)) {
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
-      let isFree = (prod.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE"));
       let itemCost = getItemCost(prod, qty);
       total += itemCost;
-      let priceLine = isFree ? "FREE (promotion)" : `$${itemCost}`;
+      let priceLine = `$${itemCost}`;
       if (prod.id === 2) {
         const pairs = Math.floor(qty / 2);
         const singles = qty % 2;
@@ -866,6 +886,11 @@
       itemsList += `- ${prod.name} x${qty} — ${priceLine}${noteText}\n`;
     }
     
+    // Free bookmark
+    if (freeBookmarkUsed) {
+      itemsList += `- 🎁 FREE BOOKMARK (one per customer with $10+ purchase)\n`;
+    }
+    
     return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns and colors vary — each piece is unique!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
   }
 
@@ -874,7 +899,7 @@
   const cartPanelDiv = document.getElementById('cartPanel');
 
   checkoutBtn.addEventListener('click', () => {
-    if (Object.keys(cart).length === 0) {
+    if (Object.keys(cart).length === 0 && !freeBookmarkUsed) {
       showMessage("❗ Add items to cart first.", true);
       return;
     }
@@ -903,7 +928,8 @@
     });
     if (success) {
       showMessage("✅ Order sent! We'll reply to your email within 24h (pickup Wednesday).", false, "checkoutStatus");
-      cart = {}; itemNotes = {};
+      cart = {}; 
+      itemNotes = {};
       freeBookmarkUsed = false;
       freeBookmarkOfferShown = false;
       updateCartSummary();
