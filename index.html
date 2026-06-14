@@ -18,11 +18,110 @@
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       padding: 1rem;
       padding-bottom: 2rem;
+      position: relative;
     }
 
     .container {
       max-width: 750px;
       margin: 0 auto;
+    }
+
+    /* NOTIFICATION POPUP */
+    .freebie-toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 320px;
+      width: calc(100% - 40px);
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      border-left: 5px solid #f7b05e;
+      overflow: hidden;
+    }
+
+    .freebie-toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-content {
+      padding: 1rem;
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+    }
+
+    .toast-icon {
+      background: #fff3e0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .toast-icon i {
+      color: #f7b05e;
+      font-size: 1.3rem;
+    }
+
+    .toast-text {
+      flex: 1;
+    }
+
+    .toast-text h4 {
+      font-size: 0.9rem;
+      color: #2d4019;
+      margin-bottom: 0.2rem;
+    }
+
+    .toast-text p {
+      font-size: 0.75rem;
+      color: #7e693f;
+      margin-bottom: 0.5rem;
+    }
+
+    .toast-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .toast-add-btn {
+      background: #5a7840;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: #b8a77a;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.2rem;
+    }
+
+    .toast-close:hover {
+      color: #8a6b3e;
+    }
+
+    @media (max-width: 550px) {
+      .freebie-toast {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+      }
     }
 
     .header {
@@ -479,7 +578,27 @@
   <div id="globalStatus" class="status-msg"></div>
 </div>
 
+<!-- FREE BOOKMARK NOTIFICATION -->
+<div id="freebieToast" class="freebie-toast">
+  <div class="toast-content">
+    <div class="toast-icon">
+      <i class="fas fa-gift"></i>
+    </div>
+    <div class="toast-text">
+      <h4>🎁 Free Bookmark!</h4>
+      <p>Your order is over $10 — would you like a free bookmark?</p>
+      <div class="toast-actions">
+        <button id="addFreeBookmarkBtn" class="toast-add-btn"><i class="fas fa-plus"></i> Add free bookmark</button>
+      </div>
+    </div>
+    <button id="closeToastBtn" class="toast-close"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
 <script>
+  // BOOKMARK ID (special item)
+  const BOOKMARK_ID = 8;
+  
   // Calculate price for Glowing Mushrooms with "2 for $5" deal
   function getMushroomPrice(quantity) {
     const pairs = Math.floor(quantity / 2);
@@ -487,27 +606,22 @@
     return (pairs * 5) + (singles * 3);
   }
 
-  // PRODUCTS - NO stock numbers, NO "wood grain varies" notes, NO handmade section
+  // PRODUCTS
   const PRODUCTS = [
-    // GARDEN
     { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true },
     { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, specialPricing: true, note: "2 for $5" },
     { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true },
-    // DECOR (formerly handmade, but no section label)
     { id: 4, name: "Small Bowls", price: 5, cat: "decor", img: "Small_Bowl.png", hasImg: true },
     { id: 5, name: "Large Bowls/Plates", price: 8, cat: "decor", img: "Large_Bowl.png", hasImg: true },
     { id: 7, name: "Windchimes", price: 8, cat: "decor", img: "Windchime.png", hasImg: true },
     { id: 8, name: "Bookmarks", price: 1, cat: "decor", img: "Bookmark.png", hasImg: true, note: "free with $10+" },
-    // KITCHEN - NO stock numbers, NO wood grain notes
     { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true },
     { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true },
     { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true },
     { id: 12, name: "Cutting Boards (Large)", price: "TBD", cat: "kitchen", img: "Large_Cutting_Board.png", hasImg: true },
     { id: 13, name: "Decorative Kitchen Knives", price: 20, cat: "kitchen", img: "Knife.png", hasImg: true },
     { id: 14, name: "Tea Infuser Trees", price: 3, cat: "kitchen", img: "Tea_Infuser.png", hasImg: true },
-    // SEASONAL
     { id: 15, name: "Christmas Gnomes", price: 3, cat: "seasonal", img: "Gnome.png", hasImg: true },
-    // SERVICES (icon only)
     { id: 16, name: "Pressure Washing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-broom" },
     { id: 17, name: "Lawn Mowing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-mower" }
   ];
@@ -515,6 +629,70 @@
   let cart = {};
   let itemNotes = {};
   let activeCategory = "all";
+  let freeBookmarkOffered = false; // Track if we've already shown the offer
+  let freeBookmarkAdded = false;   // Track if free bookmark has been added
+
+  // Get subtotal excluding bookmarks (so they don't count toward the $10 threshold)
+  function getSubtotalExcludingBookmarks() {
+    let total = 0;
+    for (let [idStr, qty] of Object.entries(cart)) {
+      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!prod) continue;
+      if (prod.id === BOOKMARK_ID) continue; // Skip bookmarks for threshold
+      if (prod.id === 2) {
+        total += getMushroomPrice(qty);
+      } else if (typeof prod.price === 'number') {
+        total += prod.price * qty;
+      }
+    }
+    return total;
+  }
+
+  // Check if should show free bookmark notification
+  function checkFreeBookmarkOffer() {
+    const subtotal = getSubtotalExcludingBookmarks();
+    const toast = document.getElementById('freebieToast');
+    
+    // Show if: subtotal >= 10, not already offered, and not already added
+    if (subtotal >= 10 && !freeBookmarkOffered && !freeBookmarkAdded) {
+      freeBookmarkOffered = true;
+      toast.classList.add('show');
+    }
+  }
+
+  // Add free bookmark to cart
+  function addFreeBookmark() {
+    if (freeBookmarkAdded) return;
+    
+    // Add 1 free bookmark (price will be $0 in display, but we'll mark it specially)
+    const currentQty = cart[BOOKMARK_ID] || 0;
+    cart[BOOKMARK_ID] = currentQty + 1;
+    freeBookmarkAdded = true;
+    
+    // Add a note that it was free
+    if (!itemNotes[BOOKMARK_ID]) {
+      itemNotes[BOOKMARK_ID] = "🎁 FREE (added with $10+ purchase)";
+    } else {
+      itemNotes[BOOKMARK_ID] += ", 🎁 FREE bonus";
+    }
+    
+    updateCartSummary();
+    renderItems();
+    
+    // Hide the toast
+    const toast = document.getElementById('freebieToast');
+    toast.classList.remove('show');
+    
+    // Show confirmation message
+    showMessage("🎉 Free bookmark added to your cart!", false);
+  }
+
+  // Close/dismiss notification
+  function dismissFreeBookmarkOffer() {
+    const toast = document.getElementById('freebieToast');
+    toast.classList.remove('show');
+    // Don't reset freeBookmarkOffered - they chose to dismiss, offer is gone
+  }
 
   function showMessage(text, isError = false, targetId = "globalStatus") {
     const el = document.getElementById(targetId);
@@ -528,7 +706,7 @@
     if (!container) return;
     const filtered = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCategory);
     container.innerHTML = filtered.map(p => {
-      const qty = cart[p.id] || 0;
+      let qty = cart[p.id] || 0;
       let priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
       if (p.id === 2) {
         priceDisplay = "$3 each or 2 for $5";
@@ -536,6 +714,9 @@
       if (p.id === 8) {
         priceDisplay = "$1 each or free with $10+";
       }
+      
+      // If this is a bookmark that was added for free, show special display
+      let isFreeBookmark = (p.id === BOOKMARK_ID && freeBookmarkAdded && qty > 0 && itemNotes[p.id]?.includes("FREE"));
       
       let imageHtml = '';
       if (p.hasImg && p.img) {
@@ -553,7 +734,7 @@
         <div class="item-card">
           ${imageHtml}
           <div class="item-info">
-            <div class="item-name">${p.name}</div>
+            <div class="item-name">${p.name} ${isFreeBookmark ? '🎁 FREE BONUS' : ''}</div>
             <div class="item-price">${priceDisplay}</div>
             <div class="item-actions">
               <button class="qty-btn minus" data-id="${p.id}">-</button>
@@ -587,6 +768,14 @@
 
   function changeQuantity(id, delta) {
     const newQty = (cart[id] || 0) + delta;
+    
+    // If removing the last free bookmark, reset flags
+    if (id === BOOKMARK_ID && newQty <= 0 && freeBookmarkAdded) {
+      freeBookmarkAdded = false;
+      freeBookmarkOffered = false;
+      delete itemNotes[id];
+    }
+    
     if (newQty <= 0) {
       delete cart[id];
       delete itemNotes[id];
@@ -595,6 +784,25 @@
     }
     updateCartSummary();
     renderItems();
+    // After changing quantity, re-check for free bookmark offer (in case they dropped below $10 and added more)
+    const subtotal = getSubtotalExcludingBookmarks();
+    if (subtotal < 10) {
+      // If below threshold, reset offer flag so it can trigger again
+      if (!freeBookmarkAdded) {
+        freeBookmarkOffered = false;
+      }
+    }
+    checkFreeBookmarkOffer();
+  }
+
+  function getItemCost(product, qty) {
+    if (product.id === 2) return getMushroomPrice(qty);
+    if (product.id === BOOKMARK_ID && freeBookmarkAdded && itemNotes[BOOKMARK_ID]?.includes("FREE")) {
+      // The free bookmark has $0 cost
+      return 0;
+    }
+    if (typeof product.price === 'number') return product.price * qty;
+    return 0;
   }
 
   function updateCartSummary() {
@@ -610,34 +818,37 @@
       if (!prod) continue;
       totalItems += qty;
       
-      let itemCost = 0;
-      let priceText = '';
+      let itemCost = getItemCost(prod, qty);
+      totalCost += itemCost;
       
+      let priceText = '';
       if (prod.id === 2) {
-        itemCost = getMushroomPrice(qty);
-        totalCost += itemCost;
         const pairs = Math.floor(qty / 2);
         const singles = qty % 2;
         let breakdown = [];
         if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
         if (singles > 0) breakdown.push(`${singles} single @ $3`);
         priceText = `$${itemCost} (${breakdown.join(' + ')})`;
+      } else if (prod.id === BOOKMARK_ID && freeBookmarkAdded && itemNotes[BOOKMARK_ID]?.includes("FREE") && qty > 0) {
+        priceText = "🎁 FREE!";
       } else if (typeof prod.price === 'number') {
-        itemCost = prod.price * qty;
-        totalCost += itemCost;
         priceText = `$${itemCost}`;
       } else {
         priceText = prod.price;
       }
       
       const noteLine = itemNotes[prod.id] ? ` 📝 ${itemNotes[prod.id]}` : '';
-      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
+      const freeTag = (prod.id === BOOKMARK_ID && itemCost === 0 && qty > 0) ? ' 🎁' : '';
+      html += `<div class="cart-item"><span><strong>${prod.name}${freeTag}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
     }
     
     if (totalItems === 0) {
       cartListDiv.innerHTML = '<div>— no items —</div>';
       totalSpan.innerText = 'Total: $0';
       countSpan.innerText = '0 items';
+      // Reset free bookmark flags when cart empty
+      freeBookmarkOffered = false;
+      freeBookmarkAdded = false;
     } else {
       cartListDiv.innerHTML = html;
       totalSpan.innerText = `Total: $${totalCost.toFixed(2)}`;
@@ -667,30 +878,21 @@
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
-      let priceLine = "";
-      let itemCost = 0;
-      
+      let itemCost = getItemCost(prod, qty);
+      total += itemCost;
+      let priceLine = itemCost === 0 ? "FREE (promotion)" : `$${itemCost}`;
       if (prod.id === 2) {
-        itemCost = getMushroomPrice(qty);
-        total += itemCost;
         const pairs = Math.floor(qty / 2);
         const singles = qty % 2;
         let breakdown = [];
         if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
         if (singles > 0) breakdown.push(`${singles} single @ $3`);
         priceLine = `$${itemCost} (${breakdown.join(' + ')})`;
-      } else if (typeof prod.price === 'number') {
-        itemCost = prod.price * qty;
-        total += itemCost;
-        priceLine = `$${itemCost}`;
-      } else {
-        priceLine = prod.price;
       }
-      
       itemsList += `- ${prod.name} x${qty} — ${priceLine}${noteText}\n`;
     }
     
-    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns and colors vary on all handmade items — each piece is unique!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
+    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns and colors vary — each piece is unique!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
   }
 
   // Checkout logic
@@ -729,6 +931,8 @@
     if (success) {
       showMessage("✅ Order sent! We'll reply to your email within 24h (pickup Wednesday).", false, "checkoutStatus");
       cart = {}; itemNotes = {};
+      freeBookmarkOffered = false;
+      freeBookmarkAdded = false;
       updateCartSummary();
       renderItems();
       checkoutFormDiv.style.display = 'none';
@@ -736,6 +940,8 @@
       document.getElementById('fullName').value = '';
       document.getElementById('checkoutEmail').value = '';
       document.getElementById('orderNotes').value = '';
+      const toast = document.getElementById('freebieToast');
+      toast.classList.remove('show');
     } else {
       showMessage("⚠️ Sending failed. Please try again.", true, "checkoutStatus");
     }
@@ -750,7 +956,7 @@
     if (!fullName) { showMessage("Full name required.", true, "customStatus"); return; }
     if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "customStatus"); return; }
     if (!details) { showMessage("Please describe your request.", true, "customStatus"); return; }
-    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns and colors vary on all handmade items — each piece is unique!`;
+    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns and colors vary — each piece is unique!`;
     const success = await sendEmail({
       email: email,
       message: customMessage,
@@ -790,6 +996,10 @@
       renderItems();
     });
   });
+
+  // Free bookmark buttons
+  document.getElementById('addFreeBookmarkBtn')?.addEventListener('click', addFreeBookmark);
+  document.getElementById('closeToastBtn')?.addEventListener('click', dismissFreeBookmarkOffer);
 
   renderItems();
   updateCartSummary();
