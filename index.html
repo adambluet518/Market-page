@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Adam Studios • Farmers Market Shop</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23476A2E'/%3E%3Cpath fill='%23F9E0A0' d='M32 14 L38 28 L52 30 L42 40 L45 54 L32 47 L19 54 L22 40 L12 30 L26 28 Z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4ede1;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1rem;
+      padding-bottom: 2rem;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: #2d4019;
+      color: white;
+      padding: 1.2rem 1.2rem;
+      border-radius: 2rem 2rem 1.5rem 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .pickup-badge {
+      background: #f7b05e;
+      color: #2d4019;
+      font-size: 0.75rem;
+      border-radius: 2rem;
+      padding: 0.3rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+      font-weight: 600;
+    }
+
+    .pattern-note {
+      background: #f0ebe0;
+      color: #7e693f;
+      font-size: 0.7rem;
+      border-radius: 2rem;
+      padding: 0.4rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+      background: white;
+      padding: 0.4rem;
+      border-radius: 3rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 0.7rem;
+      border-radius: 2.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #6b5a44;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.active {
+      background: #5a7840;
+      color: white;
+      box-shadow: 0 4px 10px rgba(90,120,64,0.3);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active-panel {
+      display: block;
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      padding: 0.7rem;
+      border-radius: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .cat-btn {
+      flex: 1 0 auto;
+      background: #f0ebe0;
+      border: none;
+      padding: 0.7rem 0.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #4a5b30;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .cat-btn.active {
+      background: #5a7840;
+      color: white;
+    }
+
+    .items-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .item-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border: 1px solid #eee2cf;
+    }
+
+    .item-img {
+      width: 80px;
+      height: 80px;
+      background: #f8f4ea;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .item-img i {
+      font-size: 2.2rem;
+      color: #b9985c;
+    }
+
+    .no-img {
+      background: #f0ebe0;
+    }
+
+    .no-img i {
+      font-size: 2rem;
+      color: #b8a77a;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #2f3e1f;
+    }
+
+    .item-price {
+      color: #7e693f;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 0.2rem 0 0.3rem;
+    }
+
+    .pattern-warning {
+      background: #fff3e0;
+      border-radius: 1rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.65rem;
+      color: #b87c2e;
+      display: inline-block;
+      margin-top: 0.2rem;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .qty-btn {
+      background: #e9e0d0;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .qty-input {
+      width: 48px;
+      text-align: center;
+      border: 1px solid #ddd0b6;
+      border-radius: 30px;
+      padding: 0.3rem 0;
+      font-weight: 600;
+    }
+
+    .cart-summary {
+      background: #2d4019;
+      color: white;
+      border-radius: 1.8rem;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      position: sticky;
+      bottom: 0.5rem;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-items-list {
+      font-size: 0.8rem;
+      max-height: 130px;
+      overflow-y: auto;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2rem 0;
+      border-bottom: 1px solid #5d7342;
+    }
+
+    .cart-total {
+      font-weight: bold;
+      text-align: right;
+      border-top: 1px solid #7c9560;
+      padding-top: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .send-btn {
+      width: 100%;
+      background: #f7b05e;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      color: #2c3a1a;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.3rem;
+      margin: 1rem 0;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: #3a5124;
+      margin-bottom: 0.3rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1.5px solid #e2d5bf;
+      border-radius: 1.2rem;
+      font-family: inherit;
+      background: #fefcf8;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #8aa95b;
+      outline: none;
+    }
+
+    .submit-order {
+      background: #5a7840;
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    .back-link {
+      background: none;
+      border: none;
+      color: #8a7347;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .status-msg {
+      margin-top: 0.8rem;
+      text-align: center;
+      padding: 0.6rem;
+      border-radius: 2rem;
+    }
+
+    .global-pattern-banner {
+      background: #fff8ed;
+      border-left: 4px solid #f7b05e;
+      padding: 0.7rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #8a6b3e;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-palette"></i> Adam Studios</h1>
+    <div class="pickup-badge"><i class="fas fa-calendar-alt"></i> WEDNESDAYS ONLY — Pick up at Farmers Market booth</div>
+    <div class="pattern-note"><i class="fas fa-paintbrush-fine"></i> 🎨 Patterns vary significantly — each piece is unique!</div>
+  </div>
+
+  <div class="global-pattern-banner">
+    <i class="fas fa-hand-sparkles" style="font-size: 1.2rem;"></i>
+    <span><strong>Handmade note:</strong> Colors, wood grain, and glaze patterns vary significantly from item to item. No two pieces are exactly alike — that's the beauty of handmade!</span>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-btn active" data-panel="shop"><i class="fas fa-shopping-bag"></i> Shop Items</button>
+    <button class="nav-btn" data-panel="custom"><i class="fas fa-pen-ruler"></i> Custom / Bulk Order</button>
+  </div>
+
+  <!-- SHOP PANEL -->
+  <div id="shopPanel" class="panel active-panel">
+    <div class="category-tabs">
+      <button class="cat-btn active" data-cat="all"><i class="fas fa-border-all"></i> All</button>
+      <button class="cat-btn" data-cat="garden"><i class="fas fa-leaf"></i> Garden</button>
+      <button class="cat-btn" data-cat="handmade"><i class="fas fa-hands"></i> Handmade</button>
+      <button class="cat-btn" data-cat="kitchen"><i class="fas fa-utensils"></i> Kitchen</button>
+      <button class="cat-btn" data-cat="seasonal"><i class="fas fa-snowman"></i> Seasonal</button>
+      <button class="cat-btn" data-cat="services"><i class="fas fa-brush"></i> Services</button>
+    </div>
+    <div id="itemsContainer" class="items-grid"></div>
+  </div>
+
+  <!-- CUSTOM / BULK REQUEST PANEL -->
+  <div id="customPanel" class="panel">
+    <div class="form-card">
+      <button id="backToShopBtn" class="back-link"><i class="fas fa-arrow-left"></i> ← Browse shop items</button>
+      <h3 style="margin-bottom: 0.8rem;"><i class="fas fa-pencil-alt"></i> Custom or bulk request</h3>
+      <p style="font-size:0.85rem; color:#7e693f; margin-bottom: 1rem;">Need a large quantity, custom design, or something not listed? Tell us below.</p>
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Full name *</label>
+        <input type="text" id="customFullName" placeholder="First and last name">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email *</label>
+        <input type="email" id="customEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-clipboard-list"></i> Custom / bulk details *</label>
+        <textarea id="customDetails" rows="4" placeholder="Describe what you need: e.g., 20 Herb Strippers wholesale, custom color bowls, large batch of plant markers..."></textarea>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-calendar-week"></i> Which Wednesday pickup?</label>
+        <select id="customWednesday">
+          <option value="This Wednesday">This Wednesday</option>
+          <option value="Next Wednesday">Next Wednesday</option>
+          <option value="2nd Wednesday of month">2nd Wednesday of month</option>
+          <option value="3rd Wednesday of month">3rd Wednesday of month</option>
+          <option value="4th Wednesday of month">4th Wednesday of month</option>
+          <option value="Last Wednesday of month">Last Wednesday of month</option>
+        </select>
+      </div>
+      <button id="submitCustomBtn" class="submit-order"><i class="fas fa-paper-plane"></i> Send custom request</button>
+      <div id="customStatus" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- SHARED CART -->
+  <div class="cart-summary" id="cartPanel">
+    <div class="cart-header">
+      <span><i class="fas fa-shopping-cart"></i> Your cart</span>
+      <span id="itemCount">0 items</span>
+    </div>
+    <div id="cartItemsList" class="cart-items-list">— empty —</div>
+    <div class="cart-total" id="cartTotal">Total: $0</div>
+    <button id="checkoutBtn" class="send-btn"><i class="fas fa-credit-card"></i> Checkout & send order</button>
+  </div>
+
+  <!-- CHECKOUT FORM -->
+  <div id="checkoutForm" style="display: none;">
+    <div class="form-card">
+      <h3><i class="fas fa-user-check"></i> Complete your order</h3>
+      <div class="pickup-badge" style="background:#f0ebe0; margin-bottom:1rem; display:inline-flex;"><i class="fas fa-calendar-alt"></i> WEDNESDAY PICKUP ONLY</div>
+      <div class="form-group">
+        <label><i class="fas fa-user-circle"></i> Full name *</label>
+        <input type="text" id="fullName" placeholder="First and Last name">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email *</label>
+        <input type="email" id="checkoutEmail" placeholder="Your email address">
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-calendar-week"></i> Pickup Wednesday *</label>
+        <select id="pickupWednesday">
+          <option value="This Wednesday">This Wednesday</option>
+          <option value="Next Wednesday">Next Wednesday</option>
+          <option value="2nd Wednesday of month">2nd Wednesday of month</option>
+          <option value="3rd Wednesday of month">3rd Wednesday of month</option>
+          <option value="4th Wednesday of month">4th Wednesday of month</option>
+          <option value="Last Wednesday of month">Last Wednesday of month</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-comment-dots"></i> Special instructions (optional)</label>
+        <textarea id="orderNotes" rows="2" placeholder="Color preference, meet at booth, timing..."></textarea>
+      </div>
+      <button id="finalSendOrderBtn" class="submit-order"><i class="fas fa-check-circle"></i> Place order (we'll reply by email)</button>
+      <button id="cancelCheckoutBtn" class="back-link" style="margin-top:0.8rem;">← cancel</button>
+      <div id="checkoutStatus" class="status-msg"></div>
+    </div>
+  </div>
+  <div id="globalStatus" class="status-msg"></div>
+</div>
+
+<script>
+  // PRODUCTS - No images for Pressure Washing and Lawn Mowing (services kept, icon only)
+  const PRODUCTS = [
+    // GARDEN
+    { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true, note: "patterns vary" },
+    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, note: "2 for $5 • glow intensity varies" },
+    { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true, note: "patterns vary" },
+    // HANDMADE
+    { id: 4, name: "Small Bowls", price: 5, cat: "handmade", img: "Small_Bowl.png", hasImg: true, note: "glaze patterns vary significantly" },
+    { id: 5, name: "Large Bowls/Plates", price: 8, cat: "handmade", img: "Large_Bowl.png", hasImg: true, note: "each piece unique" },
+    { id: 7, name: "Windchimes", price: 8, cat: "handmade", img: "Windchime.png", hasImg: true, note: "wood grain varies" },
+    { id: 8, name: "Bookmarks", price: 1, cat: "handmade", img: "Bookmark.png", hasImg: true, note: "$1 or free with $10+ • designs vary" },
+    // KITCHEN
+    { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true, note: "72 available • wood grain varies" },
+    { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true, note: "3 left • each unique" },
+    { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true, note: "7 available • wood pattern varies" },
+    { id: 12, name: "Cutting Boards (Large)", price: "TBD", cat: "kitchen", img: "Large_Cutting_Board.png", hasImg: true, note: "2 left • contact for price" },
+    { id: 13, name: "Decorative Kitchen Knives", price: 20, cat: "kitchen", img: "Knife.png", hasImg: true, note: "7 available • handle patterns vary" },
+    { id: 14, name: "Tea Infuser Trees", price: 3, cat: "kitchen", img: "Tea_Infuser.png", hasImg: true, note: "each tree unique" },
+    // SEASONAL
+    { id: 15, name: "Christmas Gnomes", price: 3, cat: "seasonal", img: "Gnome.png", hasImg: true, note: "hat colors vary" },
+    // SERVICES (no images - icon only)
+    { id: 16, name: "Pressure Washing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-broom", note: "contact for estimate" },
+    { id: 17, name: "Lawn Mowing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-mower", note: "weekly or one-time" }
+  ];
+
+  let cart = {};
+  let itemNotes = {};
+  let activeCategory = "all";
+
+  function showMessage(text, isError = false, targetId = "globalStatus") {
+    const el = document.getElementById(targetId);
+    if (!el) return;
+    el.innerHTML = `<span style="background:${isError ? '#ffe0d4' : '#d9f0c5'}; padding:0.5rem 1rem; border-radius:2rem; display:inline-block;">${text}</span>`;
+    setTimeout(() => { if (el) el.innerHTML = ""; }, 4500);
+  }
+
+  function renderItems() {
+    const container = document.getElementById('itemsContainer');
+    if (!container) return;
+    const filtered = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCategory);
+    container.innerHTML = filtered.map(p => {
+      const qty = cart[p.id] || 0;
+      const priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
+      
+      // Image HTML: either real image or icon-only for services
+      let imageHtml = '';
+      if (p.hasImg && p.img) {
+        imageHtml = `<div class="item-img" style="background-image: url('${p.img}'); background-size: cover; background-position: center;">
+                       <i class="fas fa-image" style="opacity:0.2; font-size:1.8rem;"></i>
+                     </div>`;
+      } else {
+        // Services get a nice icon instead of missing image
+        const iconName = p.icon || (p.name.includes("Pressure") ? "fas fa-broom" : "fas fa-mower");
+        imageHtml = `<div class="item-img no-img">
+                       <i class="${iconName}" style="font-size: 2rem; color: #8a7347;"></i>
+                     </div>`;
+      }
+      
+      return `
+        <div class="item-card">
+          ${imageHtml}
+          <div class="item-info">
+            <div class="item-name">${p.name}</div>
+            <div class="item-price">${priceDisplay}</div>
+            <div class="pattern-warning"><i class="fas fa-palette"></i> ${p.note}</div>
+            <div class="item-actions">
+              <button class="qty-btn minus" data-id="${p.id}">-</button>
+              <input type="text" class="qty-input" data-id="${p.id}" value="${qty}" readonly>
+              <button class="qty-btn plus" data-id="${p.id}">+</button>
+              <button class="add-note-btn" data-id="${p.id}" data-name="${p.name}" style="background:none; border:none; color:#8a7347;"><i class="fas fa-pen"></i></button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.minus').forEach(btn => btn.addEventListener('click', (e) => {
+      const id = parseInt(btn.dataset.id);
+      changeQuantity(id, -1);
+    }));
+    document.querySelectorAll('.plus').forEach(btn => btn.addEventListener('click', (e) => {
+      const id = parseInt(btn.dataset.id);
+      changeQuantity(id, 1);
+    }));
+    document.querySelectorAll('.add-note-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(btn.dataset.id);
+        const prod = PRODUCTS.find(p => p.id === id);
+        let note = prompt(`Add note for ${prod.name}:\n\nRemember: patterns vary significantly on handmade items!`);
+        if (note && note.trim()) itemNotes[id] = note.trim();
+        updateCartSummary();
+      });
+    });
+  }
+
+  function changeQuantity(id, delta) {
+    const newQty = (cart[id] || 0) + delta;
+    if (newQty <= 0) {
+      delete cart[id];
+      delete itemNotes[id];
+    } else {
+      cart[id] = newQty;
+    }
+    updateCartSummary();
+    renderItems();
+  }
+
+  function updateCartSummary() {
+    const cartListDiv = document.getElementById('cartItemsList');
+    const totalSpan = document.getElementById('cartTotal');
+    const countSpan = document.getElementById('itemCount');
+    let totalItems = 0, totalCost = 0;
+    let html = '';
+    for (let [idStr, qty] of Object.entries(cart)) {
+      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!prod) continue;
+      totalItems += qty;
+      if (typeof prod.price === 'number') totalCost += prod.price * qty;
+      const priceText = typeof prod.price === 'number' ? `$${prod.price} ea` : prod.price;
+      const noteLine = itemNotes[prod.id] ? ` 📝 ${itemNotes[prod.id]}` : '';
+      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${priceText}${noteLine}</span><span>${typeof prod.price === 'number' ? '$' + (prod.price * qty) : prod.price}</span></div>`;
+    }
+    if (totalItems === 0) {
+      cartListDiv.innerHTML = '<div>— no items —</div>';
+      totalSpan.innerText = 'Total: $0';
+      countSpan.innerText = '0 items';
+    } else {
+      cartListDiv.innerHTML = html;
+      totalSpan.innerText = `Total: $${totalCost.toFixed(2)} ${totalCost === 0 ? '(quote items)' : ''}`;
+      countSpan.innerText = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+    }
+  }
+
+  const RECIPIENT = "adamblue.t518@gmail.com";
+
+  async function sendEmail(payload) {
+    const formData = new FormData();
+    formData.append('email', payload.email);
+    formData.append('message', payload.message);
+    formData.append('_subject', payload.subject);
+    formData.append('_captcha', 'false');
+    formData.append('_replyto', payload.email);
+    try {
+      await fetch(`https://formsubmit.co/${RECIPIENT}`, { method: 'POST', body: formData, mode: 'no-cors' });
+      return true;
+    } catch(e) { return false; }
+  }
+
+  function buildShopOrderMessage(name, email, pickupDate, notes) {
+    let itemsList = "";
+    let total = 0;
+    for (let [idStr, qty] of Object.entries(cart)) {
+      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!prod) continue;
+      const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
+      itemsList += `- ${prod.name} x${qty} — ${typeof prod.price === 'number' ? `$${prod.price} each` : prod.price}${noteText}\n`;
+      if (typeof prod.price === 'number') total += prod.price * qty;
+    }
+    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Estimated total: $${total.toFixed(2)} (quote items separate)\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns, colors, wood grain, and glaze vary significantly on all handmade items. No two pieces are identical!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
+  }
+
+  // Checkout logic
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const checkoutFormDiv = document.getElementById('checkoutForm');
+  const cartPanelDiv = document.getElementById('cartPanel');
+
+  checkoutBtn.addEventListener('click', () => {
+    if (Object.keys(cart).length === 0) {
+      showMessage("❗ Add items to cart first.", true);
+      return;
+    }
+    checkoutFormDiv.style.display = 'block';
+    cartPanelDiv.style.display = 'none';
+  });
+
+  document.getElementById('cancelCheckoutBtn')?.addEventListener('click', () => {
+    checkoutFormDiv.style.display = 'none';
+    cartPanelDiv.style.display = 'block';
+    document.getElementById('checkoutStatus').innerHTML = '';
+  });
+
+  document.getElementById('finalSendOrderBtn')?.addEventListener('click', async () => {
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('checkoutEmail').value.trim();
+    const pickupWednesday = document.getElementById('pickupWednesday').value;
+    const orderNotes = document.getElementById('orderNotes').value.trim();
+    if (!fullName) { showMessage("Please enter your full name.", true, "checkoutStatus"); return; }
+    if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "checkoutStatus"); return; }
+    const messageText = buildShopOrderMessage(fullName, email, pickupWednesday, orderNotes);
+    const success = await sendEmail({
+      email: email,
+      message: messageText,
+      subject: `🛒 New Order from ${fullName}`
+    });
+    if (success) {
+      showMessage("✅ Order sent! We'll reply to your email within 24h (pickup Wednesday).", false, "checkoutStatus");
+      cart = {}; itemNotes = {};
+      updateCartSummary();
+      renderItems();
+      checkoutFormDiv.style.display = 'none';
+      cartPanelDiv.style.display = 'block';
+      document.getElementById('fullName').value = '';
+      document.getElementById('checkoutEmail').value = '';
+      document.getElementById('orderNotes').value = '';
+    } else {
+      showMessage("⚠️ Sending failed. Please try again.", true, "checkoutStatus");
+    }
+  });
+
+  // Custom request
+  document.getElementById('submitCustomBtn')?.addEventListener('click', async () => {
+    const fullName = document.getElementById('customFullName').value.trim();
+    const email = document.getElementById('customEmail').value.trim();
+    const details = document.getElementById('customDetails').value.trim();
+    const pickupWednesday = document.getElementById('customWednesday').value;
+    if (!fullName) { showMessage("Full name required.", true, "customStatus"); return; }
+    if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "customStatus"); return; }
+    if (!details) { showMessage("Please describe your request.", true, "customStatus"); return; }
+    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns, colors, and wood grain vary significantly on all items. No two pieces are exactly alike!`;
+    const success = await sendEmail({
+      email: email,
+      message: customMessage,
+      subject: `🎨 Custom/Bulk Request from ${fullName}`
+    });
+    if (success) {
+      showMessage("✅ Custom request sent! We'll email you back.", false, "customStatus");
+      document.getElementById('customFullName').value = '';
+      document.getElementById('customEmail').value = '';
+      document.getElementById('customDetails').value = '';
+    } else {
+      showMessage("⚠️ Error sending request.", true, "customStatus");
+    }
+  });
+
+  // Navigation
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const panelId = btn.dataset.panel;
+      document.getElementById('shopPanel').classList.toggle('active-panel', panelId === 'shop');
+      document.getElementById('customPanel').classList.toggle('active-panel', panelId === 'custom');
+      if (panelId === 'shop') renderItems();
+    });
+  });
+
+  document.getElementById('backToShopBtn')?.addEventListener('click', () => {
+    document.querySelector('.nav-btn[data-panel="shop"]').click();
+  });
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.cat;
+      renderItems();
+    });
+  });
+
+  renderItems();
+  updateCartSummary();
+</script>
+</body>
+</html>
