@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Adam Studios • Farmers Market Shop</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23476A2E'/%3E%3Cpath fill='%23F9E0A0' d='M32 14 L38 28 L52 30 L42 40 L45 54 L32 47 L19 54 L22 40 L12 30 L26 28 Z'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23476A2E'/%3E%3Cpath fill='%23F9E0A0' d='M32 14 L38 28 L52 30 L42 40 L45 54 L32 47 L19 54 L22 40 L12 30 L26 28 Z'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23FFD966'/%3E%3Cpath fill='%23F3B33B' d='M32 19 L35 25 L29 25 Z'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -490,11 +490,46 @@
 </div>
 
 <script>
-  // PRODUCTS - No images for Pressure Washing and Lawn Mowing (services kept, icon only)
+  // Calculate price for Glowing Mushrooms with "2 for $5" deal
+  function getMushroomPrice(quantity) {
+    const pairs = Math.floor(quantity / 2);
+    const singles = quantity % 2;
+    return (pairs * 5) + (singles * 3);
+  }
+
+  // Get price for any item (handles special mushroom logic)
+  function getItemPrice(product, quantity) {
+    if (product.id === 2) { // Glowing Mushrooms
+      return getMushroomPrice(quantity);
+    }
+    if (typeof product.price === 'number') {
+      return product.price * quantity;
+    }
+    return 0; // Quote items handled separately
+  }
+
+  // Get display price text
+  function getPriceDisplay(product, quantity) {
+    if (product.id === 2 && quantity > 0) {
+      const total = getMushroomPrice(quantity);
+      const pairs = Math.floor(quantity / 2);
+      const singles = quantity % 2;
+      let breakdown = [];
+      if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
+      if (singles > 0) breakdown.push(`${singles} single @ $3`);
+      return `$${total} (${breakdown.join(' + ')})`;
+    }
+    if (typeof product.price === 'number') {
+      return `$${product.price * quantity}`;
+    }
+    return product.price;
+  }
+
+  // PRODUCTS
   const PRODUCTS = [
     // GARDEN
     { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true, note: "patterns vary" },
-    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, note: "2 for $5 • glow intensity varies" },
+    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, note: "🍄 2 for $5 • glow intensity varies", specialPricing: true },
     { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true, note: "patterns vary" },
     // HANDMADE
     { id: 4, name: "Small Bowls", price: 5, cat: "handmade", img: "Small_Bowl.png", hasImg: true, note: "glaze patterns vary significantly" },
@@ -532,17 +567,18 @@
     const filtered = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCategory);
     container.innerHTML = filtered.map(p => {
       const qty = cart[p.id] || 0;
-      const priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
+      let priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
+      if (p.id === 2) {
+        priceDisplay = "$3 each or 2 for $5";
+      }
       
-      // Image HTML: either real image or icon-only for services
       let imageHtml = '';
       if (p.hasImg && p.img) {
         imageHtml = `<div class="item-img" style="background-image: url('${p.img}'); background-size: cover; background-position: center;">
                        <i class="fas fa-image" style="opacity:0.2; font-size:1.8rem;"></i>
                      </div>`;
       } else {
-        // Services get a nice icon instead of missing image
-        const iconName = p.icon || (p.name.includes("Pressure") ? "fas fa-broom" : "fas fa-mower");
+        const iconName = p.icon || "fas fa-tools";
         imageHtml = `<div class="item-img no-img">
                        <i class="${iconName}" style="font-size: 2rem; color: #8a7347;"></i>
                      </div>`;
@@ -601,24 +637,47 @@
     const cartListDiv = document.getElementById('cartItemsList');
     const totalSpan = document.getElementById('cartTotal');
     const countSpan = document.getElementById('itemCount');
-    let totalItems = 0, totalCost = 0;
+    let totalItems = 0;
+    let totalCost = 0;
     let html = '';
+    
     for (let [idStr, qty] of Object.entries(cart)) {
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       totalItems += qty;
-      if (typeof prod.price === 'number') totalCost += prod.price * qty;
-      const priceText = typeof prod.price === 'number' ? `$${prod.price} ea` : prod.price;
+      
+      let itemCost = 0;
+      let priceText = '';
+      
+      if (prod.id === 2) {
+        // Glowing Mushrooms special pricing
+        itemCost = getMushroomPrice(qty);
+        totalCost += itemCost;
+        const pairs = Math.floor(qty / 2);
+        const singles = qty % 2;
+        let breakdown = [];
+        if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
+        if (singles > 0) breakdown.push(`${singles} single @ $3`);
+        priceText = `$${itemCost} (${breakdown.join(' + ')})`;
+      } else if (typeof prod.price === 'number') {
+        itemCost = prod.price * qty;
+        totalCost += itemCost;
+        priceText = `$${itemCost}`;
+      } else {
+        priceText = prod.price;
+      }
+      
       const noteLine = itemNotes[prod.id] ? ` 📝 ${itemNotes[prod.id]}` : '';
-      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${priceText}${noteLine}</span><span>${typeof prod.price === 'number' ? '$' + (prod.price * qty) : prod.price}</span></div>`;
+      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
     }
+    
     if (totalItems === 0) {
       cartListDiv.innerHTML = '<div>— no items —</div>';
       totalSpan.innerText = 'Total: $0';
       countSpan.innerText = '0 items';
     } else {
       cartListDiv.innerHTML = html;
-      totalSpan.innerText = `Total: $${totalCost.toFixed(2)} ${totalCost === 0 ? '(quote items)' : ''}`;
+      totalSpan.innerText = `Total: $${totalCost.toFixed(2)}`;
       countSpan.innerText = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
     }
   }
@@ -645,10 +704,30 @@
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
-      itemsList += `- ${prod.name} x${qty} — ${typeof prod.price === 'number' ? `$${prod.price} each` : prod.price}${noteText}\n`;
-      if (typeof prod.price === 'number') total += prod.price * qty;
+      let priceLine = "";
+      let itemCost = 0;
+      
+      if (prod.id === 2) {
+        itemCost = getMushroomPrice(qty);
+        total += itemCost;
+        const pairs = Math.floor(qty / 2);
+        const singles = qty % 2;
+        let breakdown = [];
+        if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
+        if (singles > 0) breakdown.push(`${singles} single @ $3`);
+        priceLine = `$${itemCost} (${breakdown.join(' + ')})`;
+      } else if (typeof prod.price === 'number') {
+        itemCost = prod.price * qty;
+        total += itemCost;
+        priceLine = `$${itemCost}`;
+      } else {
+        priceLine = prod.price;
+      }
+      
+      itemsList += `- ${prod.name} x${qty} — ${priceLine}${noteText}\n`;
     }
-    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Estimated total: $${total.toFixed(2)} (quote items separate)\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns, colors, wood grain, and glaze vary significantly on all handmade items. No two pieces are identical!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
+    
+    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns, colors, wood grain, and glaze vary significantly on all handmade items. No two pieces are identical!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
   }
 
   // Checkout logic
