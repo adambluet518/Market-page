@@ -16,490 +16,335 @@
     body {
       background: #f4ede1;
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      padding: 1rem;
-      padding-bottom: 2rem;
+      min-height: 100vh;
       position: relative;
     }
 
-    .container {
-      max-width: 750px;
+    .main-content {
+      max-width: 900px;
       margin: 0 auto;
+      padding: 1rem;
+      padding-right: 90px;
+      transition: opacity 0.3s;
     }
 
-    .freebie-toast {
+    /* SIDE CART */
+    .side-cart {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      right: 0;
+      top: 0;
+      width: 380px;
+      height: 100vh;
       background: white;
-      border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 320px;
-      width: calc(100% - 40px);
+      box-shadow: -5px 0 25px rgba(0,0,0,0.15);
       z-index: 1000;
-      transform: translateX(400px);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
       transition: transform 0.3s ease;
-      border-left: 5px solid #f7b05e;
-      overflow: hidden;
+      border-left: 1px solid #e2d5bf;
     }
 
-    .freebie-toast.show {
+    .side-cart.open {
       transform: translateX(0);
     }
 
-    .toast-content {
-      padding: 1rem;
-      display: flex;
-      gap: 0.8rem;
-      align-items: flex-start;
-    }
-
-    .toast-icon {
-      background: #fff3e0;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .toast-icon i {
-      color: #f7b05e;
-      font-size: 1.3rem;
-    }
-
-    .toast-text {
-      flex: 1;
-    }
-
-    .toast-text h4 {
-      font-size: 0.9rem;
-      color: #2d4019;
-      margin-bottom: 0.2rem;
-    }
-
-    .toast-text p {
-      font-size: 0.75rem;
-      color: #7e693f;
-      margin-bottom: 0.5rem;
-    }
-
-    .toast-actions {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .toast-add-btn {
-      background: #5a7840;
-      color: white;
-      border: none;
-      padding: 0.3rem 0.8rem;
-      border-radius: 2rem;
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .toast-close {
-      background: none;
-      border: none;
-      color: #b8a77a;
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.2rem;
-    }
-
-    .toast-close:hover {
-      color: #8a6b3e;
-    }
-
-    @media (max-width: 550px) {
-      .freebie-toast {
-        left: 20px;
-        right: 20px;
-        max-width: none;
-      }
-    }
-
-    .header {
+    .cart-header {
       background: #2d4019;
       color: white;
-      padding: 1.2rem 1.2rem;
-      border-radius: 2rem 2rem 1.5rem 1.5rem;
-      margin-bottom: 1rem;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .header h1 {
-      font-size: 1.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .pickup-badge {
-      background: #f7b05e;
-      color: #2d4019;
-      font-size: 0.75rem;
-      border-radius: 2rem;
-      padding: 0.3rem 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.6rem;
-      font-weight: 600;
-    }
-
-    .pattern-note {
-      background: #f0ebe0;
-      color: #7e693f;
-      font-size: 0.7rem;
-      border-radius: 2rem;
-      padding: 0.4rem 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1.2rem;
-      background: white;
-      padding: 0.4rem;
-      border-radius: 3rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .nav-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 0.7rem;
-      border-radius: 2.5rem;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      color: #6b5a44;
-      transition: all 0.2s;
-    }
-
-    .nav-btn.active {
-      background: #5a7840;
-      color: white;
-      box-shadow: 0 4px 10px rgba(90,120,64,0.3);
-    }
-
-    .panel {
-      display: none;
-    }
-
-    .panel.active-panel {
-      display: block;
-    }
-
-    .category-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      background: white;
-      padding: 0.7rem;
-      border-radius: 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .cat-btn {
-      flex: 1 0 auto;
-      background: #f0ebe0;
-      border: none;
-      padding: 0.7rem 0.5rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #4a5b30;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
-
-    .cat-btn.active {
-      background: #5a7840;
-      color: white;
-    }
-
-    .items-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .item-card {
-      background: white;
-      border-radius: 1.5rem;
       padding: 1rem;
       display: flex;
-      gap: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      border: 1px solid #eee2cf;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .item-img {
-      width: 80px;
-      height: 80px;
+    .cart-header h3 {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-cart {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .cart-items-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .cart-item-row {
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #f0ebe0;
+      align-items: center;
+    }
+
+    .cart-item-img {
+      width: 55px;
+      height: 55px;
       background: #f8f4ea;
-      border-radius: 1rem;
+      border-radius: 0.8rem;
+      background-size: cover;
+      background-position: center;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background-size: cover;
-      background-position: center;
     }
 
-    .item-img i {
-      font-size: 2.2rem;
+    .cart-item-img i {
+      font-size: 1.5rem;
       color: #b9985c;
     }
 
-    .no-img {
-      background: #f0ebe0;
-    }
-
-    .no-img i {
-      font-size: 2rem;
-      color: #b8a77a;
-    }
-
-    .item-info {
+    .cart-item-details {
       flex: 1;
     }
 
-    .item-name {
-      font-weight: 800;
-      font-size: 1.05rem;
+    .cart-item-name {
+      font-weight: 600;
+      font-size: 0.85rem;
       color: #2f3e1f;
     }
 
-    .item-price {
+    .cart-item-price {
+      font-size: 0.75rem;
       color: #7e693f;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin: 0.2rem 0 0.3rem;
     }
 
-    .item-actions {
+    .cart-item-actions {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      margin-top: 0.5rem;
+      gap: 0.5rem;
     }
 
-    .qty-btn {
+    .cart-qty-btn {
       background: #e9e0d0;
       border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 30px;
+      width: 24px;
+      height: 24px;
+      border-radius: 20px;
       font-weight: bold;
-      font-size: 1.2rem;
       cursor: pointer;
+      font-size: 1rem;
     }
 
-    .qty-input {
-      width: 48px;
-      text-align: center;
-      border: 1px solid #ddd0b6;
-      border-radius: 30px;
-      padding: 0.3rem 0;
-      font-weight: 600;
-    }
-
-    .cart-summary {
-      background: #2d4019;
-      color: white;
-      border-radius: 1.8rem;
-      padding: 1rem 1.2rem;
-      margin: 1rem 0;
-      position: sticky;
-      bottom: 0.5rem;
-    }
-
-    .cart-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .cart-items-list {
+    .cart-qty {
       font-size: 0.8rem;
-      max-height: 130px;
-      overflow-y: auto;
-      margin-bottom: 0.5rem;
+      min-width: 25px;
+      text-align: center;
     }
 
-    .cart-item {
+    .cart-item-note {
+      font-size: 0.65rem;
+      color: #b8a77a;
+      margin-top: 0.2rem;
+    }
+
+    .cart-footer {
+      padding: 1rem;
+      border-top: 1px solid #e2d5bf;
+      background: #fefcf8;
+    }
+
+    .cart-total-row {
       display: flex;
       justify-content: space-between;
-      padding: 0.2rem 0;
-      border-bottom: 1px solid #5d7342;
-    }
-
-    .cart-total {
       font-weight: bold;
-      text-align: right;
-      border-top: 1px solid #7c9560;
-      padding-top: 0.4rem;
-      margin-top: 0.3rem;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #2d4019;
     }
 
-    .send-btn {
+    .checkout-side-btn {
       width: 100%;
       background: #f7b05e;
       border: none;
       padding: 0.8rem;
       border-radius: 2rem;
       font-weight: bold;
-      color: #2c3a1a;
-      font-size: 1rem;
-      margin-top: 0.5rem;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      cursor: pointer;
     }
 
-    .form-card {
-      background: white;
-      border-radius: 1.8rem;
-      padding: 1.3rem;
-      margin: 1rem 0;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-group label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      color: #3a5124;
-      margin-bottom: 0.3rem;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1.5px solid #e2d5bf;
-      border-radius: 1.2rem;
-      font-family: inherit;
-      background: #fefcf8;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: #8aa95b;
-      outline: none;
-    }
-
-    .submit-order {
-      background: #5a7840;
-      color: white;
-      border: none;
-      padding: 0.9rem;
-      border-radius: 2rem;
-      font-weight: bold;
-      width: 100%;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-
-    .back-link {
-      background: none;
-      border: none;
-      color: #8a7347;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .status-msg {
-      margin-top: 0.8rem;
+    .cart-empty {
       text-align: center;
-      padding: 0.6rem;
-      border-radius: 2rem;
+      color: #b8a77a;
+      padding: 2rem;
     }
 
-    .global-pattern-banner {
-      background: #fff8ed;
-      border-left: 4px solid #f7b05e;
-      padding: 0.7rem 1rem;
-      margin-bottom: 1rem;
-      border-radius: 1rem;
-      font-size: 0.8rem;
+    /* CART BUTTON (floating) */
+    .cart-button {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #2d4019;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 30px;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      color: #8a6b3e;
-    }
-
-    .remove-btn {
-      background: none;
-      border: none;
-      color: #e0a878;
+      justify-content: center;
       cursor: pointer;
-      font-size: 0.7rem;
-      margin-left: 0.5rem;
+      z-index: 999;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
     }
 
-    .remove-btn:hover {
-      color: #f7b05e;
-      text-decoration: underline;
+    .cart-button:hover {
+      transform: scale(1.05);
     }
+
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f7b05e;
+      color: #2d4019;
+      border-radius: 20px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .cart-button i {
+      font-size: 1.5rem;
+    }
+
+    /* OVERLAY */
+    .cart-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 998;
+      display: none;
+    }
+
+    .cart-overlay.show {
+      display: block;
+    }
+
+    /* CHECKOUT MODAL OVERLAY */
+    .checkout-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .checkout-overlay.show {
+      display: flex;
+    }
+
+    .checkout-modal {
+      background: white;
+      border-radius: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1101;
+    }
+
+    /* Rest of original styles */
+    .header {
+      background: #2d4019;
+      color: white;
+      padding: 1.2rem;
+      border-radius: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .header h1 { font-size: 1.8rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .pickup-badge { background: #f7b05e; color: #2d4019; font-size: 0.75rem; border-radius: 2rem; padding: 0.3rem 1rem; display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.6rem; }
+    .pattern-note { background: #f0ebe0; color: #7e693f; font-size: 0.7rem; border-radius: 2rem; padding: 0.4rem 1rem; display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
+    .nav-tabs { display: flex; gap: 0.8rem; margin-bottom: 1.2rem; background: white; padding: 0.4rem; border-radius: 3rem; }
+    .nav-btn { flex: 1; background: transparent; border: none; padding: 0.7rem; border-radius: 2.5rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #6b5a44; }
+    .nav-btn.active { background: #5a7840; color: white; }
+    .panel { display: none; }
+    .panel.active-panel { display: block; }
+    .category-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; background: white; padding: 0.7rem; border-radius: 2rem; }
+    .cat-btn { flex: 1 0 auto; background: #f0ebe0; border: none; padding: 0.7rem 0.5rem; border-radius: 2rem; font-weight: 600; font-size: 0.85rem; color: #4a5b30; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+    .cat-btn.active { background: #5a7840; color: white; }
+    .items-grid { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+    .item-card { background: white; border-radius: 1.5rem; padding: 1rem; display: flex; gap: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #eee2cf; }
+    .item-img { width: 80px; height: 80px; background: #f8f4ea; border-radius: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-size: cover; background-position: center; }
+    .item-img i { font-size: 2.2rem; color: #b9985c; }
+    .no-img { background: #f0ebe0; }
+    .no-img i { font-size: 2rem; color: #b8a77a; }
+    .item-info { flex: 1; }
+    .item-name { font-weight: 800; font-size: 1.05rem; color: #2f3e1f; }
+    .item-price { color: #7e693f; font-weight: 600; font-size: 0.9rem; margin: 0.2rem 0 0.3rem; }
+    .item-actions { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.5rem; }
+    .qty-btn { background: #e9e0d0; border: none; width: 30px; height: 30px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+    .qty-input { width: 48px; text-align: center; border: 1px solid #ddd0b6; border-radius: 30px; padding: 0.3rem 0; font-weight: 600; }
+    .form-card { background: white; border-radius: 1.8rem; padding: 1.3rem; margin: 1rem 0; box-shadow: 0 6px 14px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #3a5124; margin-bottom: 0.3rem; }
+    input, textarea, select { width: 100%; padding: 0.8rem; border: 1.5px solid #e2d5bf; border-radius: 1.2rem; font-family: inherit; background: #fefcf8; }
+    .submit-order { background: #5a7840; color: white; border: none; padding: 0.9rem; border-radius: 2rem; font-weight: bold; width: 100%; cursor: pointer; margin-top: 0.5rem; }
+    .back-link { background: none; border: none; color: #8a7347; font-weight: 600; margin-bottom: 1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .status-msg { margin-top: 0.8rem; text-align: center; padding: 0.6rem; border-radius: 2rem; }
+    .global-pattern-banner { background: #fff8ed; border-left: 4px solid #f7b05e; padding: 0.7rem 1rem; margin-bottom: 1rem; border-radius: 1rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.6rem; color: #8a6b3e; }
+    .freebie-toast { position: fixed; bottom: 100px; right: 20px; background: white; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 320px; z-index: 1001; transform: translateX(400px); transition: transform 0.3s ease; border-left: 5px solid #f7b05e; }
+    .freebie-toast.show { transform: translateX(0); }
+    .toast-content { padding: 1rem; display: flex; gap: 0.8rem; align-items: flex-start; }
+    .toast-icon { background: #fff3e0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .toast-icon i { color: #f7b05e; font-size: 1.3rem; }
+    .toast-text { flex: 1; }
+    .toast-text h4 { font-size: 0.9rem; color: #2d4019; }
+    .toast-text p { font-size: 0.75rem; color: #7e693f; margin-bottom: 0.5rem; }
+    .toast-add-btn { background: #5a7840; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; cursor: pointer; }
+    .toast-close { background: none; border: none; color: #b8a77a; cursor: pointer; padding: 0.2rem; }
+    .remove-btn { background: none; border: none; color: #e0a878; cursor: pointer; font-size: 0.7rem; }
+    @media (max-width: 650px) { .side-cart { width: 100%; } .main-content { padding-right: 1rem; } }
   </style>
 </head>
 <body>
-<div class="container">
+
+<div class="main-content" id="mainContent">
   <div class="header">
     <h1><i class="fas fa-palette"></i> Adam Studios</h1>
-    <div class="pickup-badge"><i class="fas fa-calendar-alt"></i> WEDNESDAYS ONLY — Pick up at Farmers Market booth</div>
-    <div class="pattern-note"><i class="fas fa-paintbrush-fine"></i> 🎨 Patterns vary — each piece is unique!</div>
+    <div class="pickup-badge"><i class="fas fa-calendar-alt"></i> WEDNESDAYS ONLY — Pick up at booth</div>
+    <div class="pattern-note"><i class="fas fa-paintbrush-fine"></i> 🎨 Patterns vary — each piece unique!</div>
   </div>
 
   <div class="global-pattern-banner">
-    <i class="fas fa-hand-sparkles" style="font-size: 1.2rem;"></i>
-    <span><strong>Handmade note:</strong> Colors and patterns vary from item to item. No two pieces are exactly alike — that's the beauty of handmade!</span>
+    <i class="fas fa-hand-sparkles"></i>
+    <span>Handmade note: Colors and patterns vary — no two pieces are alike!</span>
   </div>
 
   <div class="nav-tabs">
-    <button class="nav-btn active" data-panel="shop"><i class="fas fa-shopping-bag"></i> Shop Items</button>
-    <button class="nav-btn" data-panel="custom"><i class="fas fa-pen-ruler"></i> Custom / Bulk Order</button>
+    <button class="nav-btn active" data-panel="shop"><i class="fas fa-shopping-bag"></i> Shop</button>
+    <button class="nav-btn" data-panel="custom"><i class="fas fa-pen-ruler"></i> Custom / Bulk</button>
   </div>
 
   <div id="shopPanel" class="panel active-panel">
     <div class="category-tabs">
-      <button class="cat-btn active" data-cat="all"><i class="fas fa-border-all"></i> All</button>
+      <button class="cat-btn active" data-cat="all">All</button>
       <button class="cat-btn" data-cat="garden"><i class="fas fa-leaf"></i> Garden</button>
       <button class="cat-btn" data-cat="kitchen"><i class="fas fa-utensils"></i> Kitchen</button>
       <button class="cat-btn" data-cat="decor"><i class="fas fa-home"></i> Decor</button>
@@ -511,93 +356,69 @@
 
   <div id="customPanel" class="panel">
     <div class="form-card">
-      <button id="backToShopBtn" class="back-link"><i class="fas fa-arrow-left"></i> ← Browse shop items</button>
-      <h3 style="margin-bottom: 0.8rem;"><i class="fas fa-pencil-alt"></i> Custom or bulk request</h3>
-      <p style="font-size:0.85rem; color:#7e693f; margin-bottom: 1rem;">Need a large quantity, custom design, or something not listed? Tell us below.</p>
-      <div class="form-group">
-        <label><i class="fas fa-user"></i> Full name *</label>
-        <input type="text" id="customFullName" placeholder="First and last name">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-envelope"></i> Email *</label>
-        <input type="email" id="customEmail" placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-clipboard-list"></i> Custom / bulk details *</label>
-        <textarea id="customDetails" rows="4" placeholder="Describe what you need..."></textarea>
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-calendar-week"></i> Which Wednesday pickup?</label>
-        <select id="customWednesday">
-          <option value="This Wednesday">This Wednesday</option>
-          <option value="Next Wednesday">Next Wednesday</option>
-          <option value="2nd Wednesday of month">2nd Wednesday of month</option>
-          <option value="3rd Wednesday of month">3rd Wednesday of month</option>
-          <option value="4th Wednesday of month">4th Wednesday of month</option>
-          <option value="Last Wednesday of month">Last Wednesday of month</option>
-        </select>
-      </div>
-      <button id="submitCustomBtn" class="submit-order"><i class="fas fa-paper-plane"></i> Send custom request</button>
+      <button id="backToShopBtn" class="back-link"><i class="fas fa-arrow-left"></i> ← Browse shop</button>
+      <h3><i class="fas fa-pencil-alt"></i> Custom / bulk request</h3>
+      <p style="font-size:0.85rem; color:#7e693f; margin: 0.5rem 0 1rem;">Need large quantity or custom design? Tell us below.</p>
+      <div class="form-group"><label><i class="fas fa-user"></i> Full name *</label><input type="text" id="customFullName"></div>
+      <div class="form-group"><label><i class="fas fa-envelope"></i> Email *</label><input type="email" id="customEmail"></div>
+      <div class="form-group"><label><i class="fas fa-clipboard-list"></i> Details *</label><textarea id="customDetails" rows="4"></textarea></div>
+      <div class="form-group"><label><i class="fas fa-calendar-week"></i> Which Wednesday?</label><select id="customWednesday"><option>This Wednesday</option><option>Next Wednesday</option><option>2nd Wednesday</option><option>3rd Wednesday</option><option>4th Wednesday</option><option>Last Wednesday</option></select></div>
+      <button id="submitCustomBtn" class="submit-order"><i class="fas fa-paper-plane"></i> Send request</button>
       <div id="customStatus" class="status-msg"></div>
     </div>
   </div>
 
-  <div class="cart-summary" id="cartPanel">
-    <div class="cart-header">
-      <span><i class="fas fa-shopping-cart"></i> Your cart</span>
-      <span id="itemCount">0 items</span>
-    </div>
-    <div id="cartItemsList" class="cart-items-list">— empty —</div>
-    <div class="cart-total" id="cartTotal">Total: $0</div>
-    <button id="checkoutBtn" class="send-btn"><i class="fas fa-credit-card"></i> Checkout & send order</button>
-  </div>
+  <div id="globalStatus" class="status-msg"></div>
+</div>
 
-  <div id="checkoutForm" style="display: none;">
-    <div class="form-card">
-      <h3><i class="fas fa-user-check"></i> Complete your order</h3>
-      <div class="pickup-badge" style="background:#f0ebe0; margin-bottom:1rem; display:inline-flex;"><i class="fas fa-calendar-alt"></i> WEDNESDAY PICKUP ONLY</div>
-      <div class="form-group">
-        <label><i class="fas fa-user-circle"></i> Full name *</label>
-        <input type="text" id="fullName" placeholder="First and Last name">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-envelope"></i> Email *</label>
-        <input type="email" id="checkoutEmail" placeholder="Your email address">
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-calendar-week"></i> Pickup Wednesday *</label>
-        <select id="pickupWednesday">
-          <option value="This Wednesday">This Wednesday</option>
-          <option value="Next Wednesday">Next Wednesday</option>
-          <option value="2nd Wednesday of month">2nd Wednesday of month</option>
-          <option value="3rd Wednesday of month">3rd Wednesday of month</option>
-          <option value="4th Wednesday of month">4th Wednesday of month</option>
-          <option value="Last Wednesday of month">Last Wednesday of month</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label><i class="fas fa-comment-dots"></i> Special instructions (optional)</label>
-        <textarea id="orderNotes" rows="2" placeholder="Color preference, meet at booth, timing..."></textarea>
-      </div>
-      <button id="finalSendOrderBtn" class="submit-order"><i class="fas fa-check-circle"></i> Place order (we'll reply by email)</button>
-      <button id="cancelCheckoutBtn" class="back-link" style="margin-top:0.8rem;">← cancel</button>
+<!-- CHECKOUT OVERLAY (separate from cart overlay) -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <div class="form-card" style="margin: 0; border-radius: 2rem;">
+      <h3><i class="fas fa-user-check"></i> Complete order</h3>
+      <div class="form-group"><label><i class="fas fa-user-circle"></i> Full name *</label><input type="text" id="fullName"></div>
+      <div class="form-group"><label><i class="fas fa-envelope"></i> Email *</label><input type="email" id="checkoutEmail"></div>
+      <div class="form-group"><label><i class="fas fa-calendar-week"></i> Pickup Wednesday *</label><select id="pickupWednesday"><option>This Wednesday</option><option>Next Wednesday</option><option>2nd Wednesday</option><option>3rd Wednesday</option><option>4th Wednesday</option><option>Last Wednesday</option></select></div>
+      <div class="form-group"><label><i class="fas fa-comment-dots"></i> Special instructions</label><textarea id="orderNotes" rows="2"></textarea></div>
+      <button id="finalSendOrderBtn" class="submit-order"><i class="fas fa-check-circle"></i> Place order</button>
+      <button id="cancelCheckoutBtn" class="back-link" style="margin-top: 0.5rem;">← cancel</button>
       <div id="checkoutStatus" class="status-msg"></div>
     </div>
   </div>
-  <div id="globalStatus" class="status-msg"></div>
+</div>
+
+<!-- Floating Cart Button -->
+<div class="cart-button" id="cartButton">
+  <i class="fas fa-shopping-cart"></i>
+  <span class="cart-count" id="cartCountBadge">0</span>
+</div>
+
+<!-- Side Cart -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="side-cart" id="sideCart">
+  <div class="cart-header">
+    <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+    <button class="close-cart" id="closeCartBtn"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-items-scroll" id="sideCartItems">
+    <div class="cart-empty">Your cart is empty</div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>Total:</span>
+      <span id="sideCartTotal">$0</span>
+    </div>
+    <button class="checkout-side-btn" id="sideCheckoutBtn"><i class="fas fa-credit-card"></i> Checkout</button>
+  </div>
 </div>
 
 <div id="freebieToast" class="freebie-toast">
   <div class="toast-content">
-    <div class="toast-icon">
-      <i class="fas fa-gift"></i>
-    </div>
+    <div class="toast-icon"><i class="fas fa-gift"></i></div>
     <div class="toast-text">
       <h4>🎁 Free Bookmark!</h4>
-      <p>Your order is over $10 — would you like a free bookmark?</p>
-      <div class="toast-actions">
-        <button id="addFreeBookmarkBtn" class="toast-add-btn"><i class="fas fa-plus"></i> Add free bookmark</button>
-      </div>
+      <p>Your order is over $10 — add a free bookmark?</p>
+      <button id="addFreeBookmarkBtn" class="toast-add-btn"><i class="fas fa-plus"></i> Add free</button>
     </div>
     <button id="closeToastBtn" class="toast-close"><i class="fas fa-times"></i></button>
   </div>
@@ -607,30 +428,26 @@
   const BOOKMARK_ID = 8;
   let freeBookmarkUsed = false;
   let freeBookmarkOfferShown = false;
-  
-  function getMushroomPrice(quantity) {
-    const pairs = Math.floor(quantity / 2);
-    const singles = quantity % 2;
-    return (pairs * 5) + (singles * 3);
-  }
+
+  function getMushroomPrice(qty) { return Math.floor(qty/2)*5 + (qty%2)*3; }
 
   const PRODUCTS = [
-    { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true },
-    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true },
-    { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true },
-    { id: 4, name: "Small Bowls", price: 5, cat: "decor", img: "Small_Bowl.png", hasImg: true },
-    { id: 5, name: "Large Bowls/Plates", price: 8, cat: "decor", img: "Large_Bowl.png", hasImg: true },
-    { id: 7, name: "Windchimes", price: 8, cat: "decor", img: "Windchime.png", hasImg: true },
-    { id: 8, name: "Bookmarks", price: 1, cat: "decor", img: "Bookmark.png", hasImg: true },
-    { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true },
-    { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true },
-    { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true },
-    { id: 12, name: "Cutting Boards (Large)", price: "TBD", cat: "kitchen", img: "Large_Cutting_Board.png", hasImg: true },
-    { id: 13, name: "Decorative Kitchen Knives", price: 20, cat: "kitchen", img: "Knife.png", hasImg: true },
-    { id: 14, name: "Tea Infuser Trees", price: 3, cat: "kitchen", img: "Tea_Infuser.png", hasImg: true },
-    { id: 15, name: "Christmas Gnomes", price: 3, cat: "seasonal", img: "Gnome.png", hasImg: true },
-    { id: 16, name: "Pressure Washing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-broom" },
-    { id: 17, name: "Lawn Mowing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-mower" }
+    { id:1, name:"Herb Strippers", price:2, cat:"garden", img:"Herb_Stripper.png", hasImg:true },
+    { id:2, name:"Glowing Mushrooms", price:3, cat:"garden", img:"Glowing_Mushroom.png", hasImg:true },
+    { id:3, name:"Plant Markers", price:5, cat:"garden", img:"Plant_Marker.png", hasImg:true },
+    { id:4, name:"Small Bowls", price:5, cat:"decor", img:"Small_Bowl.png", hasImg:true },
+    { id:5, name:"Large Bowls/Plates", price:8, cat:"decor", img:"Large_Bowl.png", hasImg:true },
+    { id:7, name:"Windchimes", price:8, cat:"decor", img:"Windchime.png", hasImg:true },
+    { id:8, name:"Bookmarks", price:1, cat:"decor", img:"Bookmark.png", hasImg:true },
+    { id:9, name:"Spatulas", price:1, cat:"kitchen", img:"Spatula.png", hasImg:true },
+    { id:10, name:"Rolling Pins", price:10, cat:"kitchen", img:"Rolling_Pin.png", hasImg:true },
+    { id:11, name:"Cutting Boards (Small)", price:12, cat:"kitchen", img:"sm_Cutting_board.png", hasImg:true },
+    { id:12, name:"Cutting Boards (Large)", price:40, cat:"kitchen", img:"Large_Cutting_Board.png", hasImg:true },
+    { id:13, name:"Decorative Kitchen Knives", price:20, cat:"kitchen", img:"Knife.png", hasImg:true },
+    { id:14, name:"Tea Infuser Trees", price:3, cat:"kitchen", img:"Tea_Infuser.png", hasImg:true },
+    { id:15, name:"Christmas Gnomes", price:3, cat:"seasonal", img:"Gnome.png", hasImg:true },
+    { id:16, name:"Pressure Washing", price:"Quote", cat:"services", img:null, hasImg:false, icon:"fas fa-broom" },
+    { id:17, name:"Lawn Mowing", price:"Quote", cat:"services", img:null, hasImg:false, icon:"fas fa-mower" }
   ];
 
   let cart = {};
@@ -640,66 +457,59 @@
   function getSubtotalExcludingBookmarks() {
     let total = 0;
     for (let [idStr, qty] of Object.entries(cart)) {
-      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
-      if (!prod) continue;
-      if (prod.id === BOOKMARK_ID) continue;
-      if (prod.id === 2) {
-        total += getMushroomPrice(qty);
-      } else if (typeof prod.price === 'number') {
-        total += prod.price * qty;
-      }
+      const p = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!p || p.id === BOOKMARK_ID) continue;
+      if (p.id === 2) total += getMushroomPrice(qty);
+      else if (typeof p.price === 'number') total += p.price * qty;
     }
     return total;
   }
 
-  function checkAndShowFreeBookmarkOffer() {
-    const subtotal = getSubtotalExcludingBookmarks();
-    const toast = document.getElementById('freebieToast');
-    
-    if (subtotal >= 10 && !freeBookmarkUsed && !freeBookmarkOfferShown) {
+  function checkFreeOffer() {
+    if (getSubtotalExcludingBookmarks() >= 10 && !freeBookmarkUsed && !freeBookmarkOfferShown) {
       freeBookmarkOfferShown = true;
-      toast.classList.add('show');
+      document.getElementById('freebieToast').classList.add('show');
     }
   }
 
   function addFreeBookmark() {
     if (freeBookmarkUsed) return;
-    
-    // Remove any existing bookmarks (paid ones or any)
-    if (cart[BOOKMARK_ID]) {
-      delete cart[BOOKMARK_ID];
-      delete itemNotes[BOOKMARK_ID];
-    }
-    
-    // Set a special flag to indicate free bookmark (not stored as quantity)
+    if (cart[BOOKMARK_ID]) delete cart[BOOKMARK_ID];
     freeBookmarkUsed = true;
-    
-    updateCartSummary();
-    renderItems();
-    
-    const toast = document.getElementById('freebieToast');
-    toast.classList.remove('show');
-    showMessage("🎉 FREE Bookmark added to your cart! You can still buy additional bookmarks separately.", false);
+    updateUI();
+    document.getElementById('freebieToast').classList.remove('show');
+    showMessage("🎉 FREE Bookmark added!");
   }
 
-  function removeFreeBookmark() {
-    freeBookmarkUsed = false;
-    freeBookmarkOfferShown = false;
-    updateCartSummary();
-    renderItems();
-    showMessage("Free bookmark removed from cart.", false);
+  function removeFreeBookmark() { freeBookmarkUsed = false; freeBookmarkOfferShown = false; updateUI(); }
+
+  function getItemCost(p, qty) {
+    if (p.id === 2) return getMushroomPrice(qty);
+    if (typeof p.price === 'number') return p.price * qty;
+    return 0;
   }
 
-  function dismissFreeBookmarkOffer() {
-    const toast = document.getElementById('freebieToast');
-    toast.classList.remove('show');
-  }
-
-  function showMessage(text, isError = false, targetId = "globalStatus") {
-    const el = document.getElementById(targetId);
+  function showMessage(msg, isErr = false, target = "globalStatus") {
+    const el = document.getElementById(target);
     if (!el) return;
-    el.innerHTML = `<span style="background:${isError ? '#ffe0d4' : '#d9f0c5'}; padding:0.5rem 1rem; border-radius:2rem; display:inline-block;">${text}</span>`;
-    setTimeout(() => { if (el) el.innerHTML = ""; }, 4500);
+    el.innerHTML = `<span style="background:${isErr ? '#ffe0d4' : '#d9f0c5'}; padding:0.5rem 1rem; border-radius:2rem;">${msg}</span>`;
+    setTimeout(() => el.innerHTML = "", 4000);
+  }
+
+  function changeQuantity(id, delta) {
+    const newQty = (cart[id] || 0) + delta;
+    if (newQty <= 0) delete cart[id];
+    else cart[id] = newQty;
+    updateUI();
+    if (getSubtotalExcludingBookmarks() < 10) freeBookmarkOfferShown = false;
+    checkFreeOffer();
+  }
+
+  function updateUI() {
+    renderItems();
+    renderSideCart();
+    const totalItems = Object.values(cart).reduce((a,b)=>a+b,0) + (freeBookmarkUsed ? 1 : 0);
+    document.getElementById('cartCountBadge').innerText = totalItems;
   }
 
   function renderItems() {
@@ -707,298 +517,144 @@
     if (!container) return;
     const filtered = activeCategory === "all" ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCategory);
     container.innerHTML = filtered.map(p => {
-      let qty = cart[p.id] || 0;
+      const qty = cart[p.id] || 0;
       let priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
-      if (p.id === 2) {
-        priceDisplay = "$3 each or 2 for $5";
-      }
-      
-      let imageHtml = '';
-      if (p.hasImg && p.img) {
-        imageHtml = `<div class="item-img" style="background-image: url('${p.img}'); background-size: cover; background-position: center;">
-                       <i class="fas fa-image" style="opacity:0.2; font-size:1.8rem;"></i>
-                     </div>`;
-      } else {
-        const iconName = p.icon || "fas fa-tools";
-        imageHtml = `<div class="item-img no-img">
-                       <i class="${iconName}" style="font-size: 2rem; color: #8a7347;"></i>
-                     </div>`;
-      }
-      
-      return `
-        <div class="item-card">
-          ${imageHtml}
-          <div class="item-info">
-            <div class="item-name">${p.name}</div>
-            <div class="item-price">${priceDisplay}</div>
-            <div class="item-actions">
-              <button class="qty-btn minus" data-id="${p.id}">-</button>
-              <input type="text" class="qty-input" data-id="${p.id}" value="${qty}" readonly>
-              <button class="qty-btn plus" data-id="${p.id}">+</button>
-              <button class="add-note-btn" data-id="${p.id}" data-name="${p.name}" style="background:none; border:none; color:#8a7347;"><i class="fas fa-pen"></i></button>
-            </div>
-          </div>
-        </div>
-      `;
+      if (p.id === 2) priceDisplay = "$3 each or 2 for $5";
+      let imgHtml = p.hasImg && p.img ? `<div class="item-img" style="background-image: url('${p.img}');"></div>` : `<div class="item-img no-img"><i class="${p.icon || 'fas fa-image'}"></i></div>`;
+      return `<div class="item-card">${imgHtml}<div class="item-info"><div class="item-name">${p.name}</div><div class="item-price">${priceDisplay}</div><div class="item-actions"><button class="qty-btn minus" data-id="${p.id}">-</button><input class="qty-input" data-id="${p.id}" value="${qty}" readonly><button class="qty-btn plus" data-id="${p.id}">+</button><button class="add-note-btn" data-id="${p.id}" style="background:none; border:none; color:#8a7347;"><i class="fas fa-pen"></i></button></div></div></div>`;
     }).join('');
-
-    document.querySelectorAll('.minus').forEach(btn => btn.addEventListener('click', (e) => {
-      const id = parseInt(btn.dataset.id);
-      changeQuantity(id, -1);
+    document.querySelectorAll('.minus').forEach(b => b.addEventListener('click', e => changeQuantity(parseInt(b.dataset.id), -1)));
+    document.querySelectorAll('.plus').forEach(b => b.addEventListener('click', e => changeQuantity(parseInt(b.dataset.id), 1)));
+    document.querySelectorAll('.add-note-btn').forEach(b => b.addEventListener('click', e => {
+      const id = parseInt(b.dataset.id);
+      const note = prompt(`Note for ${PRODUCTS.find(p=>p.id===id).name}:`);
+      if (note?.trim()) itemNotes[id] = note.trim();
+      updateUI();
     }));
-    document.querySelectorAll('.plus').forEach(btn => btn.addEventListener('click', (e) => {
-      const id = parseInt(btn.dataset.id);
-      changeQuantity(id, 1);
-    }));
-    document.querySelectorAll('.add-note-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(btn.dataset.id);
-        const prod = PRODUCTS.find(p => p.id === id);
-        let note = prompt(`Add note for ${prod.name}:`);
-        if (note && note.trim()) itemNotes[id] = note.trim();
-        updateCartSummary();
-      });
-    });
   }
 
-  function changeQuantity(id, delta) {
-    const currentQty = cart[id] || 0;
-    const newQty = currentQty + delta;
-    
-    if (newQty <= 0) {
-      delete cart[id];
-      delete itemNotes[id];
-    } else {
-      cart[id] = newQty;
-    }
-    
-    updateCartSummary();
-    renderItems();
-    
-    const subtotal = getSubtotalExcludingBookmarks();
-    if (subtotal < 10) {
-      freeBookmarkOfferShown = false;
-    }
-    
-    checkAndShowFreeBookmarkOffer();
-  }
-
-  function getItemCost(product, qty) {
-    if (product.id === 2) return getMushroomPrice(qty);
-    if (typeof product.price === 'number') return product.price * qty;
-    return 0;
-  }
-
-  function updateCartSummary() {
-    const cartListDiv = document.getElementById('cartItemsList');
-    const totalSpan = document.getElementById('cartTotal');
-    const countSpan = document.getElementById('itemCount');
-    let totalItems = 0;
+  function renderSideCart() {
+    const container = document.getElementById('sideCartItems');
     let totalCost = 0;
     let html = '';
-    
-    // First, add all regular items
     for (let [idStr, qty] of Object.entries(cart)) {
-      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
-      if (!prod) continue;
-      totalItems += qty;
-      let itemCost = getItemCost(prod, qty);
+      const p = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!p) continue;
+      let itemCost = getItemCost(p, qty);
       totalCost += itemCost;
-      
-      let priceText = '';
-      if (prod.id === 2) {
-        const pairs = Math.floor(qty / 2);
-        const singles = qty % 2;
-        let breakdown = [];
-        if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
-        if (singles > 0) breakdown.push(`${singles} single @ $3`);
-        priceText = `$${itemCost} (${breakdown.join(' + ')})`;
-      } else if (typeof prod.price === 'number') {
-        priceText = `$${itemCost}`;
-      } else {
-        priceText = prod.price;
-      }
-      
-      const noteLine = itemNotes[prod.id] ? ` 📝 ${itemNotes[prod.id]}` : '';
-      html += `<div class="cart-item"><span><strong>${prod.name}</strong> x${qty} ${noteLine}</span><span>${priceText}</span></div>`;
+      let priceText = p.id === 2 ? `$${itemCost}` : (typeof p.price === 'number' ? `$${itemCost}` : p.price);
+      let imgHtml = p.hasImg && p.img ? `<div class="cart-item-img" style="background-image: url('${p.img}');"></div>` : `<div class="cart-item-img"><i class="${p.icon || 'fas fa-image'}"></i></div>`;
+      html += `<div class="cart-item-row"><div class="cart-item-img" style="background-image: url('${p.img}'); background-size:cover;"></div><div class="cart-item-details"><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${priceText}</div>${itemNotes[p.id] ? `<div class="cart-item-note">📝 ${itemNotes[p.id]}</div>` : ''}</div><div class="cart-item-actions"><button class="cart-qty-btn" data-id="${p.id}" data-delta="-1">-</button><span class="cart-qty">${qty}</span><button class="cart-qty-btn" data-id="${p.id}" data-delta="1">+</button></div></div>`;
     }
-    
-    // Add the free bookmark as a separate row (not as a quantity)
     if (freeBookmarkUsed) {
-      html += `<div class="cart-item"><span><strong>🎁 FREE Bookmark</strong> <button class="remove-btn" id="removeFreeBookmarkBtn" style="background:none; border:none; color:#e0a878; cursor:pointer;">[remove]</button></span><span>🎁 FREE!</span></div>`;
-      totalItems += 1;
+      html += `<div class="cart-item-row"><div class="cart-item-img"><i class="fas fa-bookmark"></i></div><div class="cart-item-details"><div class="cart-item-name">🎁 FREE Bookmark</div><div class="cart-item-price">FREE!</div></div><div class="cart-item-actions"><button id="removeFreeCartBtn" style="background:none; border:none; color:#e0a878; cursor:pointer;">Remove</button></div></div>`;
     }
-    
-    if (totalItems === 0) {
-      cartListDiv.innerHTML = '<div>— no items —</div>';
-      totalSpan.innerText = 'Total: $0';
-      countSpan.innerText = '0 items';
-      freeBookmarkUsed = false;
-      freeBookmarkOfferShown = false;
-    } else {
-      cartListDiv.innerHTML = html;
-      totalSpan.innerText = `Total: $${totalCost.toFixed(2)}`;
-      countSpan.innerText = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
-      
-      // Attach remove free bookmark handler if it exists
-      const removeBtn = document.getElementById('removeFreeBookmarkBtn');
-      if (removeBtn) {
-        removeBtn.addEventListener('click', removeFreeBookmark);
-      }
-    }
+    if (Object.keys(cart).length === 0 && !freeBookmarkUsed) html = '<div class="cart-empty">Your cart is empty</div>';
+    container.innerHTML = html;
+    document.getElementById('sideCartTotal').innerText = `$${totalCost.toFixed(2)}`;
+    document.querySelectorAll('.cart-qty-btn').forEach(b => b.addEventListener('click', e => {
+      const id = parseInt(b.dataset.id);
+      const delta = parseInt(b.dataset.delta);
+      changeQuantity(id, delta);
+    }));
+    const removeFree = document.getElementById('removeFreeCartBtn');
+    if (removeFree) removeFree.addEventListener('click', removeFreeBookmark);
   }
 
+  // Cart open/close
+  const sideCart = document.getElementById('sideCart');
+  const overlay = document.getElementById('cartOverlay');
+  const checkoutOverlay = document.getElementById('checkoutOverlay');
+  
+  document.getElementById('cartButton').onclick = () => { sideCart.classList.add('open'); overlay.classList.add('show'); };
+  document.getElementById('closeCartBtn').onclick = () => { sideCart.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.onclick = () => { sideCart.classList.remove('open'); overlay.classList.remove('show'); };
+  
+  document.getElementById('sideCheckoutBtn').onclick = () => {
+    if (Object.keys(cart).length === 0 && !freeBookmarkUsed) { showMessage("Add items first", true); return; }
+    sideCart.classList.remove('open');
+    overlay.classList.remove('show');
+    checkoutOverlay.classList.add('show');
+  };
+  
+  document.getElementById('cancelCheckoutBtn').onclick = () => {
+    checkoutOverlay.classList.remove('show');
+  };
+
+  // Email send
   const RECIPIENT = "adamblue.t518@gmail.com";
-
   async function sendEmail(payload) {
-    const formData = new FormData();
-    formData.append('email', payload.email);
-    formData.append('message', payload.message);
-    formData.append('_subject', payload.subject);
-    formData.append('_captcha', 'false');
-    formData.append('_replyto', payload.email);
-    try {
-      await fetch(`https://formsubmit.co/${RECIPIENT}`, { method: 'POST', body: formData, mode: 'no-cors' });
-      return true;
-    } catch(e) { return false; }
+    const fd = new FormData();
+    fd.append('email', payload.email);
+    fd.append('message', payload.message);
+    fd.append('_subject', payload.subject);
+    fd.append('_captcha', 'false');
+    fd.append('_replyto', payload.email);
+    try { await fetch(`https://formsubmit.co/${RECIPIENT}`, { method: 'POST', body: fd, mode: 'no-cors' }); return true; } catch(e) { return false; }
   }
 
-  function buildShopOrderMessage(name, email, pickupDate, notes) {
+  document.getElementById('finalSendOrderBtn').onclick = async () => {
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('checkoutEmail').value.trim();
+    const pickup = document.getElementById('pickupWednesday').value;
+    const notes = document.getElementById('orderNotes').value;
+    if (!name || !email?.includes('@')) { showMessage("Name and valid email required", true, "checkoutStatus"); return; }
     let itemsList = "";
     let total = 0;
-    
-    // Regular items
     for (let [idStr, qty] of Object.entries(cart)) {
-      const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
-      if (!prod) continue;
-      const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
-      let itemCost = getItemCost(prod, qty);
-      total += itemCost;
-      let priceLine = `$${itemCost}`;
-      if (prod.id === 2) {
-        const pairs = Math.floor(qty / 2);
-        const singles = qty % 2;
-        let breakdown = [];
-        if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
-        if (singles > 0) breakdown.push(`${singles} single @ $3`);
-        priceLine = `$${itemCost} (${breakdown.join(' + ')})`;
-      }
-      itemsList += `- ${prod.name} x${qty} — ${priceLine}${noteText}\n`;
+      const p = PRODUCTS.find(p => p.id === parseInt(idStr));
+      if (!p) continue;
+      let cost = getItemCost(p, qty);
+      total += cost;
+      itemsList += `- ${p.name} x${qty} — $${cost}\n`;
     }
-    
-    // Free bookmark
-    if (freeBookmarkUsed) {
-      itemsList += `- 🎁 FREE BOOKMARK (one per customer with $10+ purchase)\n`;
-    }
-    
-    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns and colors vary — each piece is unique!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
-  }
-
-  const checkoutBtn = document.getElementById('checkoutBtn');
-  const checkoutFormDiv = document.getElementById('checkoutForm');
-  const cartPanelDiv = document.getElementById('cartPanel');
-
-  checkoutBtn.addEventListener('click', () => {
-    if (Object.keys(cart).length === 0 && !freeBookmarkUsed) {
-      showMessage("❗ Add items to cart first.", true);
-      return;
-    }
-    checkoutFormDiv.style.display = 'block';
-    cartPanelDiv.style.display = 'none';
-  });
-
-  document.getElementById('cancelCheckoutBtn')?.addEventListener('click', () => {
-    checkoutFormDiv.style.display = 'none';
-    cartPanelDiv.style.display = 'block';
-    document.getElementById('checkoutStatus').innerHTML = '';
-  });
-
-  document.getElementById('finalSendOrderBtn')?.addEventListener('click', async () => {
-    const fullName = document.getElementById('fullName').value.trim();
-    const email = document.getElementById('checkoutEmail').value.trim();
-    const pickupWednesday = document.getElementById('pickupWednesday').value;
-    const orderNotes = document.getElementById('orderNotes').value.trim();
-    if (!fullName) { showMessage("Please enter your full name.", true, "checkoutStatus"); return; }
-    if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "checkoutStatus"); return; }
-    const messageText = buildShopOrderMessage(fullName, email, pickupWednesday, orderNotes);
-    const success = await sendEmail({
-      email: email,
-      message: messageText,
-      subject: `🛒 New Order from ${fullName}`
-    });
-    if (success) {
-      showMessage("✅ Order sent! We'll reply to your email within 24h (pickup Wednesday).", false, "checkoutStatus");
-      cart = {}; 
-      itemNotes = {};
-      freeBookmarkUsed = false;
-      freeBookmarkOfferShown = false;
-      updateCartSummary();
-      renderItems();
-      checkoutFormDiv.style.display = 'none';
-      cartPanelDiv.style.display = 'block';
+    if (freeBookmarkUsed) itemsList += `- 🎁 FREE BOOKMARK (one per $10+)\n`;
+    const msg = `🛍️ ADAM STUDIOS ORDER\n\nCustomer: ${name}\nEmail: ${email}\nPickup: ${pickup}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\nPickup only Wednesdays at booth.\nNotes: ${notes || "—"}`;
+    const ok = await sendEmail({ email, message: msg, subject: `Order from ${name}` });
+    if (ok) {
+      showMessage("✅ Order sent! We'll reply by email.", false, "checkoutStatus");
+      cart = {}; itemNotes = {}; freeBookmarkUsed = false; freeBookmarkOfferShown = false;
+      updateUI();
+      checkoutOverlay.classList.remove('show');
       document.getElementById('fullName').value = '';
       document.getElementById('checkoutEmail').value = '';
       document.getElementById('orderNotes').value = '';
-      const toast = document.getElementById('freebieToast');
-      toast.classList.remove('show');
-    } else {
-      showMessage("⚠️ Sending failed. Please try again.", true, "checkoutStatus");
-    }
-  });
+    } else showMessage("⚠️ Error sending", true, "checkoutStatus");
+  };
 
-  document.getElementById('submitCustomBtn')?.addEventListener('click', async () => {
-    const fullName = document.getElementById('customFullName').value.trim();
+  document.getElementById('submitCustomBtn').onclick = async () => {
+    const name = document.getElementById('customFullName').value.trim();
     const email = document.getElementById('customEmail').value.trim();
     const details = document.getElementById('customDetails').value.trim();
-    const pickupWednesday = document.getElementById('customWednesday').value;
-    if (!fullName) { showMessage("Full name required.", true, "customStatus"); return; }
-    if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "customStatus"); return; }
-    if (!details) { showMessage("Please describe your request.", true, "customStatus"); return; }
-    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns and colors vary — each piece is unique!`;
-    const success = await sendEmail({
-      email: email,
-      message: customMessage,
-      subject: `🎨 Custom/Bulk Request from ${fullName}`
-    });
-    if (success) {
-      showMessage("✅ Custom request sent! We'll email you back.", false, "customStatus");
-      document.getElementById('customFullName').value = '';
-      document.getElementById('customEmail').value = '';
-      document.getElementById('customDetails').value = '';
-    } else {
-      showMessage("⚠️ Error sending request.", true, "customStatus");
-    }
-  });
+    const pickup = document.getElementById('customWednesday').value;
+    if (!name || !email?.includes('@') || !details) { showMessage("All fields required", true, "customStatus"); return; }
+    const msg = `✨ CUSTOM REQUEST\n\nName: ${name}\nEmail: ${email}\nPickup: ${pickup}\n\nDetails:\n${details}\n\nPickup only Wednesdays.`;
+    const ok = await sendEmail({ email, message: msg, subject: `Custom request from ${name}` });
+    if (ok) { showMessage("✅ Request sent!", false, "customStatus"); document.getElementById('customFullName').value = ''; document.getElementById('customEmail').value = ''; document.getElementById('customDetails').value = ''; }
+    else showMessage("⚠️ Error", true, "customStatus");
+  };
 
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const panelId = btn.dataset.panel;
-      document.getElementById('shopPanel').classList.toggle('active-panel', panelId === 'shop');
-      document.getElementById('customPanel').classList.toggle('active-panel', panelId === 'custom');
-      if (panelId === 'shop') renderItems();
-    });
+  // Navigation
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.onclick = () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = btn.dataset.panel;
+    document.getElementById('shopPanel').classList.toggle('active-panel', panel === 'shop');
+    document.getElementById('customPanel').classList.toggle('active-panel', panel === 'custom');
+    if (panel === 'shop') renderItems();
   });
-
-  document.getElementById('backToShopBtn')?.addEventListener('click', () => {
-    document.querySelector('.nav-btn[data-panel="shop"]').click();
+  document.getElementById('backToShopBtn').onclick = () => document.querySelector('.nav-btn[data-panel="shop"]').click();
+  document.querySelectorAll('.cat-btn').forEach(btn => btn.onclick = () => {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCategory = btn.dataset.cat;
+    renderItems();
   });
-
-  document.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeCategory = btn.dataset.cat;
-      renderItems();
-    });
-  });
-
-  document.getElementById('addFreeBookmarkBtn')?.addEventListener('click', addFreeBookmark);
-  document.getElementById('closeToastBtn')?.addEventListener('click', dismissFreeBookmarkOffer);
+  document.getElementById('addFreeBookmarkBtn').onclick = addFreeBookmark;
+  document.getElementById('closeToastBtn').onclick = () => document.getElementById('freebieToast').classList.remove('show');
 
   renderItems();
-  updateCartSummary();
+  updateUI();
 </script>
 </body>
 </html>
