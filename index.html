@@ -26,7 +26,6 @@
       margin: 0 auto;
     }
 
-    /* NOTIFICATION POPUP */
     .freebie-toast {
       position: fixed;
       bottom: 20px;
@@ -484,7 +483,6 @@
     <button class="nav-btn" data-panel="custom"><i class="fas fa-pen-ruler"></i> Custom / Bulk Order</button>
   </div>
 
-  <!-- SHOP PANEL -->
   <div id="shopPanel" class="panel active-panel">
     <div class="category-tabs">
       <button class="cat-btn active" data-cat="all"><i class="fas fa-border-all"></i> All</button>
@@ -497,7 +495,6 @@
     <div id="itemsContainer" class="items-grid"></div>
   </div>
 
-  <!-- CUSTOM / BULK REQUEST PANEL -->
   <div id="customPanel" class="panel">
     <div class="form-card">
       <button id="backToShopBtn" class="back-link"><i class="fas fa-arrow-left"></i> ← Browse shop items</button>
@@ -513,7 +510,7 @@
       </div>
       <div class="form-group">
         <label><i class="fas fa-clipboard-list"></i> Custom / bulk details *</label>
-        <textarea id="customDetails" rows="4" placeholder="Describe what you need: e.g., 20 Herb Strippers wholesale, custom color bowls, large batch of plant markers..."></textarea>
+        <textarea id="customDetails" rows="4" placeholder="Describe what you need..."></textarea>
       </div>
       <div class="form-group">
         <label><i class="fas fa-calendar-week"></i> Which Wednesday pickup?</label>
@@ -531,7 +528,6 @@
     </div>
   </div>
 
-  <!-- SHARED CART -->
   <div class="cart-summary" id="cartPanel">
     <div class="cart-header">
       <span><i class="fas fa-shopping-cart"></i> Your cart</span>
@@ -542,7 +538,6 @@
     <button id="checkoutBtn" class="send-btn"><i class="fas fa-credit-card"></i> Checkout & send order</button>
   </div>
 
-  <!-- CHECKOUT FORM -->
   <div id="checkoutForm" style="display: none;">
     <div class="form-card">
       <h3><i class="fas fa-user-check"></i> Complete your order</h3>
@@ -578,7 +573,6 @@
   <div id="globalStatus" class="status-msg"></div>
 </div>
 
-<!-- FREE BOOKMARK NOTIFICATION -->
 <div id="freebieToast" class="freebie-toast">
   <div class="toast-content">
     <div class="toast-icon">
@@ -597,10 +591,9 @@
 
 <script>
   const BOOKMARK_ID = 8;
-  let freeBookmarkUsed = false; // Has the customer used their one free bookmark?
-  let freeBookmarkOfferShown = false; // Has the popup been shown?
+  let freeBookmarkUsed = false;
+  let freeBookmarkOfferShown = false;
   
-  // Calculate price for Glowing Mushrooms with "2 for $5" deal
   function getMushroomPrice(quantity) {
     const pairs = Math.floor(quantity / 2);
     const singles = quantity % 2;
@@ -609,12 +602,12 @@
 
   const PRODUCTS = [
     { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true },
-    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, specialPricing: true, note: "2 for $5" },
+    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true },
     { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true },
     { id: 4, name: "Small Bowls", price: 5, cat: "decor", img: "Small_Bowl.png", hasImg: true },
     { id: 5, name: "Large Bowls/Plates", price: 8, cat: "decor", img: "Large_Bowl.png", hasImg: true },
     { id: 7, name: "Windchimes", price: 8, cat: "decor", img: "Windchime.png", hasImg: true },
-    { id: 8, name: "Bookmarks", price: 1, cat: "decor", img: "Bookmark.png", hasImg: true, note: "free with $10+" },
+    { id: 8, name: "Bookmarks", price: 1, cat: "decor", img: "Bookmark.png", hasImg: true },
     { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true },
     { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true },
     { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true },
@@ -658,22 +651,23 @@
   function addFreeBookmark() {
     if (freeBookmarkUsed) return;
     
-    const currentQty = cart[BOOKMARK_ID] || 0;
-    cart[BOOKMARK_ID] = currentQty + 1;
-    freeBookmarkUsed = true;
-    
-    if (!itemNotes[BOOKMARK_ID]) {
-      itemNotes[BOOKMARK_ID] = "🎁 FREE (one per customer with $10+ purchase)";
-    } else {
-      itemNotes[BOOKMARK_ID] += ", 🎁 FREE bonus";
+    // Remove any existing bookmarks (paid ones)
+    if (cart[BOOKMARK_ID]) {
+      delete cart[BOOKMARK_ID];
+      delete itemNotes[BOOKMARK_ID];
     }
+    
+    // Add exactly 1 free bookmark
+    cart[BOOKMARK_ID] = 1;
+    itemNotes[BOOKMARK_ID] = "🎁 FREE with $10+ purchase";
+    freeBookmarkUsed = true;
     
     updateCartSummary();
     renderItems();
     
     const toast = document.getElementById('freebieToast');
     toast.classList.remove('show');
-    showMessage("🎉 Free bookmark added to your cart!", false);
+    showMessage("🎉 Free bookmark added to your cart! You can still buy more bookmarks separately.", false);
   }
 
   function dismissFreeBookmarkOffer() {
@@ -697,9 +691,6 @@
       let priceDisplay = typeof p.price === 'number' ? `$${p.price}` : p.price;
       if (p.id === 2) {
         priceDisplay = "$3 each or 2 for $5";
-      }
-      if (p.id === 8) {
-        priceDisplay = "$1 each or free with $10+";
       }
       
       let imageHtml = '';
@@ -751,11 +742,16 @@
   }
 
   function changeQuantity(id, delta) {
-    const newQty = (cart[id] || 0) + delta;
+    const currentQty = cart[id] || 0;
+    const newQty = currentQty + delta;
     
     if (newQty <= 0) {
       delete cart[id];
       delete itemNotes[id];
+      if (id === BOOKMARK_ID) {
+        freeBookmarkUsed = false;
+        freeBookmarkOfferShown = false;
+      }
     } else {
       cart[id] = newQty;
     }
@@ -765,7 +761,9 @@
     
     const subtotal = getSubtotalExcludingBookmarks();
     if (subtotal < 10) {
-      freeBookmarkOfferShown = false;
+      if (id !== BOOKMARK_ID) {
+        freeBookmarkOfferShown = false;
+      }
     }
     
     checkAndShowFreeBookmarkOffer();
@@ -773,12 +771,11 @@
 
   function getItemCost(product, qty) {
     if (product.id === 2) return getMushroomPrice(qty);
+    if (product.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE")) {
+      return 0;
+    }
     if (typeof product.price === 'number') return product.price * qty;
     return 0;
-  }
-
-  function isFreeBookmark(itemId, qty) {
-    return (itemId === BOOKMARK_ID && freeBookmarkUsed && qty > 0 && itemNotes[BOOKMARK_ID]?.includes("FREE"));
   }
 
   function updateCartSummary() {
@@ -794,8 +791,8 @@
       if (!prod) continue;
       totalItems += qty;
       
-      let isFree = isFreeBookmark(prod.id, qty);
-      let itemCost = isFree ? 0 : getItemCost(prod, qty);
+      let isFree = (prod.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE"));
+      let itemCost = getItemCost(prod, qty);
       totalCost += itemCost;
       
       let priceText = '';
@@ -854,8 +851,8 @@
       const prod = PRODUCTS.find(p => p.id === parseInt(idStr));
       if (!prod) continue;
       const noteText = itemNotes[prod.id] ? ` (Note: ${itemNotes[prod.id]})` : "";
-      let isFree = isFreeBookmark(prod.id, qty);
-      let itemCost = isFree ? 0 : getItemCost(prod, qty);
+      let isFree = (prod.id === BOOKMARK_ID && freeBookmarkUsed && itemNotes[BOOKMARK_ID]?.includes("FREE"));
+      let itemCost = getItemCost(prod, qty);
       total += itemCost;
       let priceLine = isFree ? "FREE (promotion)" : `$${itemCost}`;
       if (prod.id === 2) {
