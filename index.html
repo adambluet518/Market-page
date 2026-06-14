@@ -204,16 +204,6 @@
       margin: 0.2rem 0 0.3rem;
     }
 
-    .pattern-warning {
-      background: #fff3e0;
-      border-radius: 1rem;
-      padding: 0.2rem 0.5rem;
-      font-size: 0.65rem;
-      color: #b87c2e;
-      display: inline-block;
-      margin-top: 0.2rem;
-    }
-
     .item-actions {
       display: flex;
       align-items: center;
@@ -382,12 +372,12 @@
   <div class="header">
     <h1><i class="fas fa-palette"></i> Adam Studios</h1>
     <div class="pickup-badge"><i class="fas fa-calendar-alt"></i> WEDNESDAYS ONLY — Pick up at Farmers Market booth</div>
-    <div class="pattern-note"><i class="fas fa-paintbrush-fine"></i> 🎨 Patterns vary significantly — each piece is unique!</div>
+    <div class="pattern-note"><i class="fas fa-paintbrush-fine"></i> 🎨 Patterns vary — each piece is unique!</div>
   </div>
 
   <div class="global-pattern-banner">
     <i class="fas fa-hand-sparkles" style="font-size: 1.2rem;"></i>
-    <span><strong>Handmade note:</strong> Colors, wood grain, and glaze patterns vary significantly from item to item. No two pieces are exactly alike — that's the beauty of handmade!</span>
+    <span><strong>Handmade note:</strong> Colors and patterns vary from item to item. No two pieces are exactly alike — that's the beauty of handmade!</span>
   </div>
 
   <div class="nav-tabs">
@@ -400,8 +390,8 @@
     <div class="category-tabs">
       <button class="cat-btn active" data-cat="all"><i class="fas fa-border-all"></i> All</button>
       <button class="cat-btn" data-cat="garden"><i class="fas fa-leaf"></i> Garden</button>
-      <button class="cat-btn" data-cat="handmade"><i class="fas fa-hands"></i> Handmade</button>
       <button class="cat-btn" data-cat="kitchen"><i class="fas fa-utensils"></i> Kitchen</button>
+      <button class="cat-btn" data-cat="decor"><i class="fas fa-home"></i> Decor</button>
       <button class="cat-btn" data-cat="seasonal"><i class="fas fa-snowman"></i> Seasonal</button>
       <button class="cat-btn" data-cat="services"><i class="fas fa-brush"></i> Services</button>
     </div>
@@ -497,57 +487,29 @@
     return (pairs * 5) + (singles * 3);
   }
 
-  // Get price for any item (handles special mushroom logic)
-  function getItemPrice(product, quantity) {
-    if (product.id === 2) { // Glowing Mushrooms
-      return getMushroomPrice(quantity);
-    }
-    if (typeof product.price === 'number') {
-      return product.price * quantity;
-    }
-    return 0; // Quote items handled separately
-  }
-
-  // Get display price text
-  function getPriceDisplay(product, quantity) {
-    if (product.id === 2 && quantity > 0) {
-      const total = getMushroomPrice(quantity);
-      const pairs = Math.floor(quantity / 2);
-      const singles = quantity % 2;
-      let breakdown = [];
-      if (pairs > 0) breakdown.push(`${pairs} pair${pairs > 1 ? 's' : ''} @ $5`);
-      if (singles > 0) breakdown.push(`${singles} single @ $3`);
-      return `$${total} (${breakdown.join(' + ')})`;
-    }
-    if (typeof product.price === 'number') {
-      return `$${product.price * quantity}`;
-    }
-    return product.price;
-  }
-
-  // PRODUCTS
+  // PRODUCTS - NO stock numbers, NO "wood grain varies" notes, NO handmade section
   const PRODUCTS = [
     // GARDEN
-    { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true, note: "patterns vary" },
-    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, note: "🍄 2 for $5 • glow intensity varies", specialPricing: true },
-    { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true, note: "patterns vary" },
-    // HANDMADE
-    { id: 4, name: "Small Bowls", price: 5, cat: "handmade", img: "Small_Bowl.png", hasImg: true, note: "glaze patterns vary significantly" },
-    { id: 5, name: "Large Bowls/Plates", price: 8, cat: "handmade", img: "Large_Bowl.png", hasImg: true, note: "each piece unique" },
-    { id: 7, name: "Windchimes", price: 8, cat: "handmade", img: "Windchime.png", hasImg: true, note: "wood grain varies" },
-    { id: 8, name: "Bookmarks", price: 1, cat: "handmade", img: "Bookmark.png", hasImg: true, note: "$1 or free with $10+ • designs vary" },
-    // KITCHEN
-    { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true, note: "72 available • wood grain varies" },
-    { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true, note: "3 left • each unique" },
-    { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true, note: "7 available • wood pattern varies" },
-    { id: 12, name: "Cutting Boards (Large)", price: "TBD", cat: "kitchen", img: "Large_Cutting_Board.png", hasImg: true, note: "2 left • contact for price" },
-    { id: 13, name: "Decorative Kitchen Knives", price: 20, cat: "kitchen", img: "Knife.png", hasImg: true, note: "7 available • handle patterns vary" },
-    { id: 14, name: "Tea Infuser Trees", price: 3, cat: "kitchen", img: "Tea_Infuser.png", hasImg: true, note: "each tree unique" },
+    { id: 1, name: "Herb Strippers", price: 2, cat: "garden", img: "Herb_Stripper.png", hasImg: true },
+    { id: 2, name: "Glowing Mushrooms", price: 3, cat: "garden", img: "Glowing_Mushroom.png", hasImg: true, specialPricing: true, note: "2 for $5" },
+    { id: 3, name: "Plant Markers", price: 5, cat: "garden", img: "Plant_Marker.png", hasImg: true },
+    // DECOR (formerly handmade, but no section label)
+    { id: 4, name: "Small Bowls", price: 5, cat: "decor", img: "Small_Bowl.png", hasImg: true },
+    { id: 5, name: "Large Bowls/Plates", price: 8, cat: "decor", img: "Large_Bowl.png", hasImg: true },
+    { id: 7, name: "Windchimes", price: 8, cat: "decor", img: "Windchime.png", hasImg: true },
+    { id: 8, name: "Bookmarks", price: 1, cat: "decor", img: "Bookmark.png", hasImg: true, note: "free with $10+" },
+    // KITCHEN - NO stock numbers, NO wood grain notes
+    { id: 9, name: "Spatulas", price: 1, cat: "kitchen", img: "Spatula.png", hasImg: true },
+    { id: 10, name: "Rolling Pins", price: 10, cat: "kitchen", img: "Rolling_Pin.png", hasImg: true },
+    { id: 11, name: "Cutting Boards (Small)", price: 12, cat: "kitchen", img: "sm_Cutting_board.png", hasImg: true },
+    { id: 12, name: "Cutting Boards (Large)", price: "TBD", cat: "kitchen", img: "Large_Cutting_Board.png", hasImg: true },
+    { id: 13, name: "Decorative Kitchen Knives", price: 20, cat: "kitchen", img: "Knife.png", hasImg: true },
+    { id: 14, name: "Tea Infuser Trees", price: 3, cat: "kitchen", img: "Tea_Infuser.png", hasImg: true },
     // SEASONAL
-    { id: 15, name: "Christmas Gnomes", price: 3, cat: "seasonal", img: "Gnome.png", hasImg: true, note: "hat colors vary" },
-    // SERVICES (no images - icon only)
-    { id: 16, name: "Pressure Washing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-broom", note: "contact for estimate" },
-    { id: 17, name: "Lawn Mowing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-mower", note: "weekly or one-time" }
+    { id: 15, name: "Christmas Gnomes", price: 3, cat: "seasonal", img: "Gnome.png", hasImg: true },
+    // SERVICES (icon only)
+    { id: 16, name: "Pressure Washing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-broom" },
+    { id: 17, name: "Lawn Mowing", price: "Quote", cat: "services", img: null, hasImg: false, icon: "fas fa-mower" }
   ];
 
   let cart = {};
@@ -571,6 +533,9 @@
       if (p.id === 2) {
         priceDisplay = "$3 each or 2 for $5";
       }
+      if (p.id === 8) {
+        priceDisplay = "$1 each or free with $10+";
+      }
       
       let imageHtml = '';
       if (p.hasImg && p.img) {
@@ -590,7 +555,6 @@
           <div class="item-info">
             <div class="item-name">${p.name}</div>
             <div class="item-price">${priceDisplay}</div>
-            <div class="pattern-warning"><i class="fas fa-palette"></i> ${p.note}</div>
             <div class="item-actions">
               <button class="qty-btn minus" data-id="${p.id}">-</button>
               <input type="text" class="qty-input" data-id="${p.id}" value="${qty}" readonly>
@@ -614,7 +578,7 @@
       btn.addEventListener('click', (e) => {
         const id = parseInt(btn.dataset.id);
         const prod = PRODUCTS.find(p => p.id === id);
-        let note = prompt(`Add note for ${prod.name}:\n\nRemember: patterns vary significantly on handmade items!`);
+        let note = prompt(`Add note for ${prod.name}:`);
         if (note && note.trim()) itemNotes[id] = note.trim();
         updateCartSummary();
       });
@@ -650,7 +614,6 @@
       let priceText = '';
       
       if (prod.id === 2) {
-        // Glowing Mushrooms special pricing
         itemCost = getMushroomPrice(qty);
         totalCost += itemCost;
         const pairs = Math.floor(qty / 2);
@@ -727,7 +690,7 @@
       itemsList += `- ${prod.name} x${qty} — ${priceLine}${noteText}\n`;
     }
     
-    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns, colors, wood grain, and glaze vary significantly on all handmade items. No two pieces are identical!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
+    return `🛍️ ADAM STUDIOS - MARKET ORDER 🛍️\n\nCustomer: ${name}\nEmail: ${email}\nPickup Wednesday: ${pickupDate}\n\nITEMS:\n${itemsList}\n💰 Total: $${total.toFixed(2)}\n\n📦 PICKUP ONLY on WEDNESDAYS at Farmers Market booth (no delivery)\n\n🎨 HANDMADE NOTE: Patterns and colors vary on all handmade items — each piece is unique!\n\n📝 Special instructions: ${notes || "—"}\n\nPlease reply to confirm availability and pickup details.`;
   }
 
   // Checkout logic
@@ -787,7 +750,7 @@
     if (!fullName) { showMessage("Full name required.", true, "customStatus"); return; }
     if (!email || !email.includes('@')) { showMessage("Valid email required.", true, "customStatus"); return; }
     if (!details) { showMessage("Please describe your request.", true, "customStatus"); return; }
-    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns, colors, and wood grain vary significantly on all items. No two pieces are exactly alike!`;
+    const customMessage = `✨ CUSTOM / BULK REQUEST ✨\n\nName: ${fullName}\nEmail: ${email}\nPreferred Wednesday: ${pickupWednesday}\n\nRequest details:\n${details}\n\n📦 PICKUP ONLY on WEDNESDAYS at Adam Studios booth. No delivery.\n\n🎨 HANDMADE NOTE: Patterns and colors vary on all handmade items — each piece is unique!`;
     const success = await sendEmail({
       email: email,
       message: customMessage,
